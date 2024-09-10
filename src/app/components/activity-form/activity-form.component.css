@@ -1,0 +1,74 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .activity-form {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .user-story-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    font-size: small;
+  }
+  
+  .checkbox-wrapper input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+  }
+  
+  .time-group {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .time-box {
+    width: 48%;
+  }
+  
+  #original-estimate {
+    padding: 8px;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin: 0;
+  }
+  
+  app-control-buttons {
+    margin-top: 20px;
+    display: block;
+  }
+  
