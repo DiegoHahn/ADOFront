@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-control-buttons',
   templateUrl: './control-buttons.component.html',
-  standalone: true,
+  // standalone: true,
   styleUrls: ['./control-buttons.component.css']
 })
 export class ControlButtonsComponent {
