@@ -1,102 +1,63 @@
-<!-- <div class="container">
-    <form class="activity-form">
-      <div class="form-group">
-        <label for="board">Board:</label>
-        <input type="text" id="board" placeholder="TR-TAX" />
+<div class="container">
+  <form [formGroup]="form" class="activity-form">
+    <div class="form-group board-group">
+      <label for="board">Board:</label>
+      <div class="board-wrapper">
+        <input type="text" id="board" formControlName="board" placeholder="TR-TAX" />
+        <img src="assets/img/settings.png" alt="Configurações" class="settings-icon" (click)="onSettingsClick()" />
       </div>
-  
-      <div class="form-group">
-        <label for="userStory">User Story:</label>
-        <div class="user-story-wrapper">
-          <input type="text" id="userStory" placeholder="Digite o número da User Story" />
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="concluded" />
-            <label for="concluded">Apenas tasks em aberto</label>
-          </div>
+    </div>
+
+    <div class="form-group">
+      <label for="userStory">User Story:</label>
+      <div class="user-story-wrapper">
+        <input type="text" id="userStory" formControlName="userStoryId" (input)="onUserStoryChange()" placeholder="Digite o número da User Story" />
+        <img src="assets/img/search.png" alt="Pesquisar" class="search-icon" /> 
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="concluded" formControlName="concluded" />
+          <label for="concluded">Apenas tasks em aberto</label>
         </div>
       </div>
-      <div class="form-group">
-        <label for="task">Task:</label>
-        <select id="task">
-          <option *ngFor="let item of workItems" [value]="item">{{ item }}</option>
-        </select>
+    </div>
+
+    <div class="form-group">
+      <label for="task">Task:</label>
+      <select id="task" formControlName="task" (change)="onWorkItemSelect()">
+        <option *ngFor="let item of workItems" [ngValue]="item">
+          {{ item.workItemId }} - {{ item.title }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group time-group">
+      <div class="time-box">
+        <label for="original-estimate">Original Estimate:</label>
+        <p class="time-field" id="original-estimate">{{form.get('originalEstimate')?.value}}</p>
       </div>
-  
-      <div class="form-group time-group">
-        <div class="time-box">
-          <label for="original-estimate">Original Estimate:</label>
-          <p id="original-estimate">{{originalEstimate}}</p>
-        </div>
-        <div class="time-box">
-          <label for="remaining">Remaining:</label>
-          <input type="text" id="remaining" placeholder="5:09" />
-        </div>
+
+      <div class="time-box">
+        <label for="remaining-work">Remaining:</label>
+        <p class="time-field" id="remaining-work">{{form.get('remainingWork')?.value}}</p>
       </div>
-  
-      <div class="form-group time-group">
-        <div class="time-box">
-          <label for="start-time">Início:</label>
-          <input type="text" id="start-time" placeholder="09:01" />
-        </div>
-        <div class="time-box">
-          <label for="tempo">Tempo:</label>
-          <input type="text" id="tempo" placeholder="5:09" />
-        </div>
-      </div>
-  
-      <app-control-buttons></app-control-buttons>
-    </form>
-  </div>
-   -->
-   <div class="container">
-    <form class="activity-form">
-      <div class="form-group">
-        <label for="board">Board:</label>
-        <input type="text" id="board" placeholder="TR-TAX" />
-      </div>
-  
-      <div class="form-group">
-        <label for="userStory">User Story:</label>
-        <div class="user-story-wrapper">
-          <input type="text" id="userStory" [(ngModel)]="userStoryId" (ngModelChange)="onUserStoryChange()" placeholder="Digite o número da User Story" />
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="concluded" />
-            <label for="concluded">Apenas tasks em aberto</label>
-          </div>
-        </div>
-      </div>
-  
-      <div class="form-group">
-        <label for="task">Task:</label>
-        <select id="task" [(ngModel)]="selectedWorkItem" (ngModelChange)="onWorkItemSelect()">
-          <option [ngValue]="null">Selecione uma task</option>
-          <option *ngFor="let item of workItems" [ngValue]="item">
-            {{ item.workItemId }} - {{ item.title }}
-          </option>
-        </select>
-      </div>
-  
-      <div class="form-group time-group">
-        <div class="time-box">
-          <label for="original-estimate">Original Estimate:</label>
-          <p id="original-estimate">{{originalEstimate !== null ? originalEstimate : 'N/A'}}</p>
-        </div>
-        <div class="time-box">
-          <label for="remaining">Remaining:</label>
-          <input type="text" id="remaining" placeholder="5:09" />
-        </div>
-      </div>
-  
-      <div class="form-group time-group">
+    </div>
+      
+    <div class="form-group time-group">
         <div class="time-box">
           <label for="start-time">Início:</label>
-          <input type="text" id="start-time" placeholder="09:01" />
+          <input class="time-field" type="text" id="start-time" [value]="(timerService.startTime$ | async)" disabled />
         </div>
+        
         <div class="time-box">
-          <label for="tempo">Tempo:</label>
-          <input type="text" id="tempo" placeholder="5:09" />
+          <label for="completed-work">Tempo:</label>
+          <input type="text" id="completed-work" [value]="timerService.completedWork$ | async" disabled />
         </div>
       </div>
-      <app-control-buttons></app-control-buttons>
-    </form>
-  </div>
+
+      <button (click) ="valorForm()">
+        ValorForm
+      </button>
+
+    <app-control-buttons></app-control-buttons>
+
+  </form>
+</div>

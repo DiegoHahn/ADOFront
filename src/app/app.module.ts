@@ -1,7 +1,7 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { ActivityFormComponent } from './components/activity-form/activity-form.component';
@@ -17,11 +17,10 @@ import { ControlButtonsComponent } from './components/control-buttons/control-bu
   imports: [
     BrowserModule,
     FormsModule,
-    // HttpClientModule //perguntar
+    HttpClientModule,
+    ReactiveFormsModule
   ],
-  providers: [
-    provideHttpClient(withInterceptorsFromDi())
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
