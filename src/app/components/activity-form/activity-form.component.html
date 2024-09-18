@@ -3,8 +3,10 @@
     <div class="form-group board-group">
       <label for="board">Board:</label>
       <div class="board-wrapper">
-        <input type="text" id="board" formControlName="board" placeholder="TR-TAX" />
-        <img src="assets/img/settings.png" alt="Configurações" class="settings-icon" (click)="onSettingsClick()" />
+        <input type="text" id="board" formControlName="board"/>
+        <a [routerLink]="['/personal-data']">
+          <img src="assets/img/settings.png" alt="Configurações" class="settings-icon" />
+        </a>
       </div>
     </div>
 

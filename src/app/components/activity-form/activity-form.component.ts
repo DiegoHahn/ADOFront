@@ -5,6 +5,7 @@ import { WorkItemService } from '../work-item.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TimerService } from '../../timer.service';
 import { catchError, of, tap } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-activity-form',
@@ -20,12 +21,13 @@ export class ActivityFormComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder, 
     private workItemService: WorkItemService,  
+    private router: Router,
     public timerService: TimerService
   ) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      board: [{ value: 'TR TAX', disabled: true }],
+      board: [{ disabled: true }],
       userStoryId: [''],
       concluded: [false],
       task: [null],
@@ -42,6 +44,10 @@ export class ActivityFormComponent implements OnInit {
     this.timerService.completedWork$.subscribe(completedWork => {
       this.form.get('completedWork')?.setValue(completedWork);
     });
+
+    // if (!this.form.get('board')?.value) {
+    //   this.router.navigate(['/personal-data']);
+    // }
   }
 
   onUserStoryChange() {
