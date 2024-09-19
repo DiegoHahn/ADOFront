@@ -5,6 +5,10 @@ import { ActivityFormComponent } from './components/activity-form/activity-form.
 
 
 export const routes: Routes = [
+    {
+        path: '',
+        component: ActivityFormComponent,
+    },
     { path:  'activity-form',
         component: ActivityFormComponent
     },

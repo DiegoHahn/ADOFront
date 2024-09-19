@@ -1,21 +1,26 @@
 <div class="container">
-    <form [formGroup]="form" class="personal-data-form">
-      <div class="form-group">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail" />
+  <form [formGroup]="form" class="personal-data-form">
+    <div class="form-group">
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail" />
+      <div class="search-button-container">
+        <button class="search-button" (click)="getUserSK()"> Obter User ID</button>
       </div>
-  
-      <div class="form-group">
-        <label for="userSK">User SK:</label>
-        <input type="text" id="userSK" formControlName="userSK" placeholder="Digite seu User SK"/>
-      </div>
-  
-      <div class="form-group board-group">
-        <label for="board">Board:</label>
-        <input type="text" id="board" formControlName="board" placeholder="Informe o Board" />
-      </div>
-  
-      <button (click)="onSubmit()" class="save-button">Salvar</button>
-    </form>
-  </div>
+    </div>
+
+    <div class="form-group">
+      <label for="userSK">User ID:</label>
+      <input class="user-sk" type="text" id="userSK" formControlName="userSK"/>
+    </div>
+
+    <div class="form-group">
+      <label for="board">Board:</label>
+      <input type="text" id="board" formControlName="board" placeholder="Informe o Board"/>
+    </div>
+
+    <div class="save-button-container">
+      <button (click)="onSubmit()" class="save-button" [routerLink]="['/activity-form']">Salvar</button>
+    </div>
+  </form>
+</div>
   

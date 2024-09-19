@@ -1,11 +1,12 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TargetWorkItem } from '../target-workItem';
 import { WorkItemService } from '../work-item.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { TimerService } from '../../timer.service';
-import { catchError, of, tap } from 'rxjs';
+
 import { Router } from '@angular/router';
+import { catchError, of, tap } from 'rxjs';
+import { TimerService } from '../timer.service';
 
 @Component({
   selector: 'app-activity-form',
