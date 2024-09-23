@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
+import { UserInformation } from './user-information';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class PersonalDataService {
-  private apiUrl = 'http://localhost:8080/userSK';
+  private apiUrl = 'http://localhost:8080/userInformation';
 
   constructor(private http: HttpClient) { }
 
   getUserSKByEmail(email: string): Observable<string> {
-    return this.http.get(`${this.apiUrl}/email/${email}`, { responseType: 'text' })
+    return this.http.get(`${this.apiUrl}/userSK/${email}`, { responseType: 'text' })
       .pipe(
         map(response => {
           try {
@@ -24,5 +26,9 @@ export class PersonalDataService {
           }
         })
       );
+    }
+
+  saveUserInfo(userInformation: UserInformation): Observable<UserInformation> {
+    return this.http.post<UserInformation>(this.apiUrl, userInformation);
   }
 }

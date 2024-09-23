@@ -25,7 +25,6 @@ export class PersonalDataComponent implements OnInit {
     });
   }
 
- 
   getUserSK() {
     const email = this.form.get('email')?.value;
     this.personalDataService.getUserSKByEmail(email).pipe(
@@ -40,6 +39,14 @@ export class PersonalDataComponent implements OnInit {
   }
   
   onSubmit() {
-    console.log(".")
+  this.personalDataService.saveUserInfo(this.form.value).pipe(
+    tap(() => {
+      //logar alguma coisa?
+    }),
+    catchError(error => {
+      console.error('Erro ao salvar dados:', error);
+      return of(null);
+    })
+  ).subscribe();
   }
 }
