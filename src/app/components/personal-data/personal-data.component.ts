@@ -20,7 +20,7 @@ export class PersonalDataComponent implements OnInit {
   ngOnInit() {
     this.form = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      userSK: [{ value: '', disabled: true }, Validators.required,],
+      userSK: ['', Validators.required,],
       board: ['', Validators.required]
     });
   }

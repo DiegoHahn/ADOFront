@@ -17,11 +17,9 @@ export class PersonalDataService {
       .pipe(
         map(response => {
           try {
-            // Tenta fazer o parse como JSON
             const jsonResponse = JSON.parse(response);
             return jsonResponse.userSK;
           } catch (error) {
-            // Se falhar, assume que a resposta é o UserSK diretamente
             return response;
           }
         })
@@ -30,5 +28,14 @@ export class PersonalDataService {
 
   saveUserInfo(userInformation: UserInformation): Observable<UserInformation> {
     return this.http.post<UserInformation>(this.apiUrl, userInformation);
+  }
+
+  // getUserInformation(userSK: string): Observable<UserInformation> {
+  //   return this.http.get<UserInformation>(`${this.apiUrl}/${userSK}`);
+  // }
+
+  //como eu pego o board sem que o usuário tenha que informar o email sempre que abrir o aplicativo?
+  getUserInformation(): Observable<UserInformation> {
+    return this.http.get<UserInformation>(this.apiUrl);
   }
 }

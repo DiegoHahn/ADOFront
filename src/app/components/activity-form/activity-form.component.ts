@@ -6,6 +6,7 @@ import { WorkItemService } from '../work-item.service';
 
 import { Router } from '@angular/router';
 import { catchError, of, tap } from 'rxjs';
+import { PersonalDataService } from '../personal-data.service';
 import { TimerService } from '../timer.service';
 
 @Component({
@@ -22,13 +23,14 @@ export class ActivityFormComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder, 
     private workItemService: WorkItemService,  
-    private router: Router,
-    public timerService: TimerService
+    private personalDataservice: PersonalDataService,
+    public timerService: TimerService,
+    private router: Router
   ) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      board: [{ disabled: true }],
+      board: [''],
       userStoryId: [''],
       concluded: [false],
       task: [null],
@@ -41,6 +43,11 @@ export class ActivityFormComponent implements OnInit {
     this.timerService.startTime$.subscribe(time => {
       this.form.get('startTime')?.setValue(time);
     });
+    
+    this.personalDataservice.getUserInformation().subscribe(userInformation => {
+      this.form.get('board')?.setValue(userInformation.board);
+      }
+    );
 
     this.timerService.completedWork$.subscribe(completedWork => {
       this.form.get('completedWork')?.setValue(completedWork);
@@ -80,12 +87,4 @@ export class ActivityFormComponent implements OnInit {
       });
     }
   }
-
-  valorForm(){
-    console.log(this.form.value);
-  }
-
-  onSettingsClick() {
-    throw new Error('Method not implemented.');
-    }
 }

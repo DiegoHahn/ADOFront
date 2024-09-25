@@ -8,10 +8,15 @@ import { TargetWorkItem } from './target-workItem';
 })
 export class WorkItemService {
   private apiUrl = 'http://localhost:8080/workitems';
+  private activityRecordUrl = 'http://localhost:8080/activityrecord';
 
   constructor(private http: HttpClient) { }
 
   getWorkItemsForUserStory(userStoryId: string): Observable<TargetWorkItem[]> {
     return this.http.get<TargetWorkItem[]>(`${this.apiUrl}/userstory/${userStoryId}`);
+  }
+
+  saveWorkItem(workItem: TargetWorkItem): Observable<TargetWorkItem> {
+    return this.http.post<TargetWorkItem>(this.activityRecordUrl, workItem);
   }
 }
