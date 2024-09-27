@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { catchError, of, tap, debounceTime } from 'rxjs';
 import { PersonalDataService } from '../personal-data.service';
-import { catchError, map, of, Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
   selector: 'app-personal-data',
@@ -10,43 +10,76 @@ import { catchError, map, of, Subject, takeUntil, tap } from 'rxjs';
 })
 export class PersonalDataComponent implements OnInit {
   form!: FormGroup;
+  errors: { [key: string]: string[] } = {
+    email: [],
+    azureUserID: [],
+    board: []
+  };
 
   constructor(
     private formBuilder: FormBuilder,
     private personalDataService: PersonalDataService,
-    
   ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      userSK: ['', Validators.required,],
+      azureUserID: ['', Validators.required],
       board: ['', Validators.required]
+    });
+
+    Object.keys(this.form.controls).forEach(key => {
+      this.form.get(key)?.valueChanges.pipe(
+        debounceTime(1000)
+      ).subscribe(() => {
+        this.updateErrors(key);
+      });
     });
   }
 
-  getUserSK() {
+  updateErrors(field: string): void {
+    const control = this.form.get(field);
+    this.errors[field] = [];
+    if (control?.errors) {
+      if (control.errors['required']) {
+        this.errors[field].push(`${field.charAt(0).toUpperCase() + field.slice(1)} é obrigatório.`);
+      }
+      if (control.errors['email']) {
+        this.errors[field].push('Por favor, insira um email válido.');
+      }
+    }
+  }
+
+  getAzureUserID() {
     const email = this.form.get('email')?.value;
-    this.personalDataService.getUserSKByEmail(email).pipe(
-      tap(userSK => {
-        this.form.patchValue({ userSK: userSK });
+    this.personalDataService.getAzureUserIDByEmail(email).pipe(
+      tap(azureUserID => {
+        this.form.patchValue({ azureUserID: azureUserID });
+        this.updateErrors('azureUserID');
       }),
       catchError(error => {
-        console.error('Erro ao buscar userSK:', error);
+        console.error('Erro ao buscar azureUserID:', error);
         return of('');
       })
     ).subscribe();
   }
-  
+ 
   onSubmit() {
-  this.personalDataService.saveUserInfo(this.form.value).pipe(
-    tap(() => {
-      //logar alguma coisa?
-    }),
-    catchError(error => {
-      console.error('Erro ao salvar dados:', error);
-      return of(null);
-    })
-  ).subscribe();
+    if (this.form.valid) {
+      this.personalDataService.saveUserInfo(this.form.value).pipe(
+        tap(() => {
+          console.log('Dados salvos com sucesso');
+          // Adicione aqui qualquer lógica adicional após salvar
+        }),
+        catchError(error => {
+          console.error('Erro ao salvar dados:', error);
+          return of(null);
+        })
+      ).subscribe();
+    } else {
+      Object.keys(this.form.controls).forEach(key => {
+        this.updateErrors(key);
+      });
+    }
   }
 }

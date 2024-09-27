@@ -12,13 +12,13 @@ export class PersonalDataService {
 
   constructor(private http: HttpClient) { }
 
-  getUserSKByEmail(email: string): Observable<string> {
-    return this.http.get(`${this.apiUrl}/userSK/${email}`, { responseType: 'text' })
+  getAzureUserIDByEmail(email: string): Observable<string> {
+    return this.http.get(`${this.apiUrl}/azureUserID/${email}`, { responseType: 'text' })
       .pipe(
         map(response => {
           try {
             const jsonResponse = JSON.parse(response);
-            return jsonResponse.userSK;
+            return jsonResponse.azureUserID;
           } catch (error) {
             return response;
           }
@@ -30,12 +30,7 @@ export class PersonalDataService {
     return this.http.post<UserInformation>(this.apiUrl, userInformation);
   }
 
-  // getUserInformation(userSK: string): Observable<UserInformation> {
-  //   return this.http.get<UserInformation>(`${this.apiUrl}/${userSK}`);
-  // }
-
-  //como eu pego o board sem que o usuário tenha que informar o email sempre que abrir o aplicativo?
-  getUserInformation(): Observable<UserInformation> {
-    return this.http.get<UserInformation>(this.apiUrl);
+  getUserInformation(email: string): Observable<UserInformation> {
+    return this.http.get<UserInformation>(`${this.apiUrl}/${email}`);
   }
 }

@@ -1,6 +1,6 @@
 export interface TargetWorkItem {
     workItemId: number;
-    assignedToUserSK: string;
+    assignedToAzureUserID: string;
     title: string;
     state: string;
     originalEstimate: number | null;

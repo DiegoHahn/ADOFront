@@ -76,6 +76,17 @@ input {
   margin-top: 20px; 
 }
 
+.search-button:disabled, .save-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 .button-container button {
   margin-left: 10px;
 }
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+} 

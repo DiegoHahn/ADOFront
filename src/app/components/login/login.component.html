@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="login-box">
+        <h1 class="title">Registro de Atividades</h1>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+            <label for="email">E-mail:</label>
+            <div class="input-wrapper">
+            <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="Digite seu e-mail"
+                (blur)="updateEmailErrors()"
+            >
+            </div>
+            <div *ngFor="let error of emailErrors" class="error-message">{{ error }}</div>
+        </div>
+        <button type="submit" [disabled]="loginForm.invalid" class="login-button">Entrar</button>
+        </form>
+    </div>
+</div>

@@ -1,5 +1,5 @@
 export interface UserInformation {
     email: string;
-    userSK: string;
+    azureUserID: string;
     board: string;
 }

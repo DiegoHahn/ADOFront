@@ -8,14 +8,17 @@ import { AppComponent } from './app.component';
 import { ActivityFormComponent } from './components/activity-form/activity-form.component';
 import { ControlButtonsComponent } from './components/control-buttons/control-buttons.component';
 import { PersonalDataComponent } from './components/personal-data/personal-data.component';
+import { LoginComponent } from './components/login/login.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     ActivityFormComponent,
-    PersonalDataComponent,
     ControlButtonsComponent,
+    LoginComponent,
+    PersonalDataComponent
+   
   ],
   imports: [
     BrowserModule,
