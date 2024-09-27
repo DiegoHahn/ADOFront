@@ -51,14 +51,7 @@ export class LoginComponent implements OnInit {
         map(response => response),
         tap(response => {
           this.userInformation = response;
-          console.log('Informações do usuário:', this.userInformation);
-
-          // Armazena o usuário em um serviço (se for passar o token pro back apenas na tela de login pode ser melhor o service aqui e o localStorage na pagina de configurações)
-          // this.personalDataService.setUserInformation(this.userInformation); 
-       
-          // ou no localStorage
           localStorage.setItem('userInformation', JSON.stringify(this.userInformation));
-
           this.router.navigate(['/activity-form']);
         }),
         catchError(error => {
