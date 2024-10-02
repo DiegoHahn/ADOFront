@@ -60,11 +60,12 @@ export class ActivityFormComponent implements OnInit {
     }
   }
 
-  //Vale a pena mudar o userSK no front e ter que fazer o map aqui?
   onUserStoryChange() {
     const userStoryId = this.form.get('userStoryId')?.value;
+    const email = JSON.parse(localStorage.getItem('userInformation')!).email;
+    
     if (userStoryId) {
-      this.workItemService.getWorkItemsForUserStory(userStoryId).pipe(
+      this.workItemService.getWorkItemsForUserStory(userStoryId, email).pipe(
         map((items: any[]) => items.map(item => ({
           ...item,
           assignedToAzureUserID: item.assignedToUserSK

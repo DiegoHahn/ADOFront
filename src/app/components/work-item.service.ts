@@ -12,8 +12,8 @@ export class WorkItemService {
 
   constructor(private http: HttpClient) { }
 
-  getWorkItemsForUserStory(userStoryId: string): Observable<TargetWorkItem[]> {
-    return this.http.get<TargetWorkItem[]>(`${this.apiUrl}/userstory/${userStoryId}`);
+  getWorkItemsForUserStory(userStoryId: string, email: string): Observable<TargetWorkItem[]> {
+    return this.http.get<TargetWorkItem[]>(`${this.apiUrl}/userstory/${userStoryId}?email=${email}`);
   }
 
   saveWorkItem(workItem: TargetWorkItem): Observable<TargetWorkItem> {
