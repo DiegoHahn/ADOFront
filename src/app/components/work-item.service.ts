@@ -12,8 +12,13 @@ export class WorkItemService {
 
   constructor(private http: HttpClient) { }
 
+  // getWorkItemsForUserStory(userStoryId: string, email: string): Observable<TargetWorkItem[]> {
+  //   return this.http.get<TargetWorkItem[]>(`${this.apiUrl}/userstory/${userStoryId}?email=${email}`);
+  // }
+
   getWorkItemsForUserStory(userStoryId: string, email: string): Observable<TargetWorkItem[]> {
-    return this.http.get<TargetWorkItem[]>(`${this.apiUrl}/userstory/${userStoryId}?email=${email}`);
+    const body = { id: userStoryId, email: email };
+    return this.http.post<TargetWorkItem[]>(`${this.apiUrl}/userstory`, body);
   }
 
   saveWorkItem(workItem: TargetWorkItem): Observable<TargetWorkItem> {
