@@ -6,7 +6,6 @@ import { WorkItemService } from '../work-item.service';
 
 import { Router } from '@angular/router';
 import { catchError, map, of, tap } from 'rxjs';
-import { PersonalDataService } from '../personal-data.service';
 import { TimerService } from '../timer.service';
 
 @Component({
@@ -15,15 +14,13 @@ import { TimerService } from '../timer.service';
   styleUrls: ['./activity-form.component.css']
 })
 export class ActivityFormComponent implements OnInit {
-
-  form!: FormGroup
+  form!: FormGroup;
   workItems: TargetWorkItem[] = [];
   selectedWorkItem: TargetWorkItem | null = null;
-
+ 
   constructor(
-    private formBuilder: FormBuilder, 
+    private formBuilder: FormBuilder,
     private workItemService: WorkItemService,  
-    private personalDataservice: PersonalDataService,
     public timerService: TimerService,
     private router: Router
   ) { }
@@ -40,58 +37,70 @@ export class ActivityFormComponent implements OnInit {
       completedWork: ['']
     });
 
+    this.setupTimerSubscriptions();
+    this.loadUserInformation();
+  }
+
+  private setupTimerSubscriptions() {
     this.timerService.startTime$.subscribe(time => {
       this.form.get('startTime')?.setValue(time);
     });
-
     this.timerService.completedWork$.subscribe(completedWork => {
       this.form.get('completedWork')?.setValue(completedWork);
     });
-    
-    //PEGAR O VALOR DO BOARD (se for assim mesmo, encapsular em um método e o timer tambem)
-    const userInformation = JSON.parse(localStorage.getItem('userInformation')!);
+  }
 
+  private loadUserInformation() {
+    const userInformation = this.getUserInformationFromStorage();
     if (userInformation) {
       this.form.get('board')?.setValue(userInformation.board);
     }
-
     if (!this.form.get('board')?.value) {
       this.router.navigate(['/personal-data']);
     }
   }
 
+  private getUserInformationFromStorage(): any {
+    return JSON.parse(localStorage.getItem('userInformation') || 'null');
+  }
+
   onUserStoryChange() {
     const userStoryId = this.form.get('userStoryId')?.value;
-    const email = JSON.parse(localStorage.getItem('userInformation')!).email;
-    
-    if (userStoryId) {
-      this.workItemService.getWorkItemsForUserStory(userStoryId, email).pipe(
-        map((items: any[]) => items.map(item => ({
-          ...item,
-          assignedToAzureUserID: item.assignedToUserSK
-        }))),
-        tap((items: TargetWorkItem[]) => {
-          this.workItems = items;
-          if (this.workItems.length > 0) {
-            this.selectedWorkItem = this.workItems[0];
-            this.form.get('task')?.setValue(this.selectedWorkItem);
-            this.onWorkItemSelect();
-          }
-        }),
-        catchError((error: HttpErrorResponse) => {
-          console.error('Erro ao buscar work items:', error);
-          return of([]);
-        })
-      ).subscribe();
+    const userInformation = this.getUserInformationFromStorage();
+    const userId = userInformation?.userId;
+
+    if (userStoryId && userId) {
+      this.loadWorkItems(userStoryId, userId);
     }
+  }
+
+  private loadWorkItems(userStoryId: string, userId: string) {
+    this.workItemService.getWorkItemsForUserStory(userStoryId, userId).pipe(
+      map((items: any[]) => items.map(item => ({
+        ...item,
+        assignedToAzureUserID: item.assignedToUserSK
+      }))),
+      tap((items: TargetWorkItem[]) => {
+        this.workItems = items;
+        if (this.workItems.length > 0) {
+          this.selectedWorkItem = this.workItems[0];
+          this.form.get('task')?.setValue(this.selectedWorkItem);
+          this.onWorkItemSelect();
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error fetching work items:', error);
+        return of([]);
+      })
+    ).subscribe();
   }
 
   onWorkItemSelect() {
     const selectedWorkItem = this.form.get('task')?.value;
     if (selectedWorkItem) {
-      this.form.patchValue({ 
-        originalEstimate: selectedWorkItem.originalEstimate, 
-        remainingWork: selectedWorkItem.remainingWork 
+      this.form.patchValue({
+        originalEstimate: selectedWorkItem.originalEstimate,
+        remainingWork: selectedWorkItem.remainingWork
       });
     }
   }

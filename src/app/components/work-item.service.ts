@@ -12,8 +12,8 @@ export class WorkItemService {
 
   constructor(private http: HttpClient) { }
 
-  getWorkItemsForUserStory(userStoryId: string, userEmail: string): Observable<TargetWorkItem[]> {
-    const body = { userStoryId: userStoryId, userEmail: userEmail };
+  getWorkItemsForUserStory(userStoryId: string, userId: string): Observable<TargetWorkItem[]> {
+    const body = { userStoryId: userStoryId, userId: userId };
     return this.http.post<TargetWorkItem[]>(`${this.apiUrl}/userstory`, body);
   }
 
