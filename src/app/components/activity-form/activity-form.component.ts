@@ -7,6 +7,7 @@ import { WorkItemService } from '../work-item.service';
 import { Router } from '@angular/router';
 import { catchError, map, of, tap } from 'rxjs';
 import { TimerService } from '../timer.service';
+import { UserInformation } from '../user-information';
 
 @Component({
   selector: 'app-activity-form',
@@ -34,7 +35,8 @@ export class ActivityFormComponent implements OnInit {
       originalEstimate: [],
       remainingWork: [],
       startTime: [],
-      completedWork: ['']
+      completedWork: [''],
+      userId: [''] 
     });
 
     this.setupTimerSubscriptions();
@@ -54,13 +56,14 @@ export class ActivityFormComponent implements OnInit {
     const userInformation = this.getUserInformationFromStorage();
     if (userInformation) {
       this.form.get('board')?.setValue(userInformation.board);
+      this.form.get('userId')?.setValue(userInformation.userId);
     }
     if (!this.form.get('board')?.value) {
       this.router.navigate(['/personal-data']);
     }
   }
 
-  private getUserInformationFromStorage(): any {
+  private getUserInformationFromStorage(): UserInformation {
     return JSON.parse(localStorage.getItem('userInformation') || 'null');
   }
 
