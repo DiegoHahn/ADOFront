@@ -12,7 +12,6 @@ export class PersonalDataComponent implements OnInit {
   form!: FormGroup;
   errors: { [key: string]: string[] } = {
     email: [],
-    azureUserID: [],
     board: []
   };
 
@@ -22,10 +21,11 @@ export class PersonalDataComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const email = localStorage.getItem('email');
     this.form = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      azureUserID: ['', Validators.required],
-      board: ['', Validators.required]
+      email: [email || '', [Validators.required, Validators.email]],
+      board: [''],
+      azureToken: ['']
     });
 
     Object.keys(this.form.controls).forEach(key => {
@@ -49,27 +49,28 @@ export class PersonalDataComponent implements OnInit {
       }
     }
   }
-
-  getAzureUserID() {
+ 
+  validateAzureToken() {
     const email = this.form.get('email')?.value;
-    this.personalDataService.getAzureUserIDByEmail(email).pipe(
-      tap(azureUserID => {
-        this.form.patchValue({ azureUserID: azureUserID });
-        this.updateErrors('azureUserID');
+    const azureToken = this.form.get('azureToken')?.value;
+
+    this.personalDataService.validateAzureToken(email, azureToken).pipe(
+      tap(response => {
+        console.log('Token validado com sucesso:', response);
       }),
       catchError(error => {
-        console.error('Erro ao buscar azureUserID:', error);
-        return of('');
+        console.error('Erro ao validar token:', error);
+        return of(null);
       })
     ).subscribe();
   }
- 
+  
+  //vai servir apenas como um update pro board
   onSubmit() {
     if (this.form.valid) {
       this.personalDataService.saveUserInfo(this.form.value).pipe(
         tap(() => {
-          console.log('Dados salvos com sucesso');
-          // Adicione aqui qualquer lógica adicional após salvar
+          console.log('OK');
         }),
         catchError(error => {
           console.error('Erro ao salvar dados:', error);
@@ -81,5 +82,7 @@ export class PersonalDataComponent implements OnInit {
         this.updateErrors(key);
       });
     }
-  }
+  } 
 }
+
+

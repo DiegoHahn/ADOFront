@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { UserInformation } from './user-information';
 
 @Injectable({
@@ -26,6 +26,7 @@ export class PersonalDataService {
       );
   }
 
+  //vai servir apenas como um update pro board
   saveUserInfo(userInformation: UserInformation): Observable<UserInformation> {
     return this.http.post<UserInformation>(this.apiUrl, userInformation);
   }
@@ -33,5 +34,15 @@ export class PersonalDataService {
   getUserInformation(email: string): Observable<UserInformation> {
     const body = { email: email };
     return this.http.post<UserInformation>(`${this.apiUrl}/details`, body);
+  }
+
+  validateAzureToken(email: string, azureToken: string): Observable<any> {
+    const body = { email, token: azureToken };
+    return this.http.post(`${this.apiUrl}/azureUserID`, body).pipe(
+      catchError(error => {
+        console.error('Erro ao validar token:', error);
+        return of(null);
+      })
+    );
   }
 }

@@ -50,12 +50,20 @@ export class LoginComponent implements OnInit {
       this.personalDataService.getUserInformation(this.loginForm.get('email')?.value).pipe(
         map(response => response),
         tap(response => {
-          this.userInformation = response;
-          localStorage.setItem('userInformation', JSON.stringify(this.userInformation));
-          this.router.navigate(['/activity-form']);
+          if (response) {
+            this.userInformation = response;
+            localStorage.setItem('userInformation', JSON.stringify(this.userInformation));
+            this.router.navigate(['/activity-form']);
+          }
         }),
         catchError(error => {
-          console.error('Erro ao buscar informações do usuário:', error);
+          if (error.status === 404) {
+            this.router.navigate(['/personal-data']);
+            localStorage.setItem('email', this.loginForm.get('email')?.value);
+          } else {
+            // todo: adicionar tratamento de erro em tela
+            console.error('Erro ao buscar informações do usuário:', error);
+          }
           return of(null);
         })
       ).subscribe();
