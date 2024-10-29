@@ -2,22 +2,19 @@
   <form [formGroup]="form" class="personal-data-form">
 
     <div class="form-group">
-      <label for="azureToken">Token Azure:</label>
-      <div class="input-wrapper">
-        <input type="text" id="azureToken" formControlName="azureToken" placeholder="Informe seu Token Azure" (blur)="updateErrors('azureToken')">
-      </div>
-      <div *ngFor="let error of errors['azureToken']" class="error-message">{{ error }}</div>
-      <div class="search-button-container">
-        <button class="search-button" (click)="validateAzureToken()">Validar Token</button>
-      </div>
-    </div>
-
-    <div class="form-group">
       <label for="email">E-mail:</label>
       <div class="input-wrapper">
         <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail" (blur)="updateErrors('email')">
       </div>
       <div *ngFor="let error of errors['email']" class="error-message">{{ error }}</div>
+    </div>
+
+    <div class="form-group">
+      <label for="token">Token:</label>
+      <div class="input-wrapper">
+        <input type="text" id="token" formControlName="token" placeholder="Informe o Token" (blur)="updateErrors('token')">
+      </div>
+      <div *ngFor="let error of errors['token']" class="error-message">{{ error }}</div>
     </div>
 
     <div class="form-group">
@@ -27,6 +24,10 @@
       </div>
       <div *ngFor="let error of errors['board']" class="error-message">{{ error }}</div>
     </div>
+    
+    <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
     <div class="save-button-container">
       <button (click)="onSubmit()" class="save-button" [disabled]="form.invalid">Salvar</button>
     </div>

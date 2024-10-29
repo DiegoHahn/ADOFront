@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { catchError, of, tap, debounceTime } from 'rxjs';
 import { PersonalDataService } from '../personal-data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-personal-data',
@@ -10,14 +11,14 @@ import { PersonalDataService } from '../personal-data.service';
 })
 export class PersonalDataComponent implements OnInit {
   form!: FormGroup;
-  errors: { [key: string]: string[] } = {
-    email: [],
-    board: []
-  };
+  errors: { [key: string]: string[] } = { email: [], board: [] };
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
     private personalDataService: PersonalDataService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -25,7 +26,7 @@ export class PersonalDataComponent implements OnInit {
     this.form = this.formBuilder.group({
       email: [email || '', [Validators.required, Validators.email]],
       board: [''],
-      azureToken: ['']
+      token: ['']
     });
 
     Object.keys(this.form.controls).forEach(key => {
@@ -49,31 +50,20 @@ export class PersonalDataComponent implements OnInit {
       }
     }
   }
- 
-  validateAzureToken() {
-    const email = this.form.get('email')?.value;
-    const azureToken = this.form.get('azureToken')?.value;
 
-    this.personalDataService.validateAzureToken(email, azureToken).pipe(
-      tap(response => {
-        console.log('Token validado com sucesso:', response);
-      }),
-      catchError(error => {
-        console.error('Erro ao validar token:', error);
-        return of(null);
-      })
-    ).subscribe();
-  }
-  
-  //vai servir apenas como um update pro board
   onSubmit() {
     if (this.form.valid) {
+      this.successMessage = null;
+      this.errorMessage = null;
+
       this.personalDataService.saveUserInfo(this.form.value).pipe(
         tap(() => {
-          console.log('OK');
+          this.router.navigate(['/activity-form']);
         }),
         catchError(error => {
           console.error('Erro ao salvar dados:', error);
+          this.successMessage = null;
+          this.errorMessage = error;
           return of(null);
         })
       ).subscribe();
@@ -82,7 +72,6 @@ export class PersonalDataComponent implements OnInit {
         this.updateErrors(key);
       });
     }
-  } 
+  }
 }
-
 

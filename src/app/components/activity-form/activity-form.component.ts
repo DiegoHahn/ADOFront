@@ -55,7 +55,7 @@ export class ActivityFormComponent implements OnInit {
   private loadUserInformation() {
     const userInformation = this.getUserInformationFromStorage();
     if (userInformation) {
-      this.form.get('board')?.setValue(userInformation.board);
+      this.form.get('board')?.setValue(userInformation.board); //TODO: pegar do banco de dados ao invez do localStorage
       this.form.get('userId')?.setValue(userInformation.userId);
     }
     if (!this.form.get('board')?.value) {
@@ -92,7 +92,7 @@ export class ActivityFormComponent implements OnInit {
         }
       }),
       catchError((error: HttpErrorResponse) => {
-        console.error('Error fetching work items:', error);
+        console.error('Erro ao buscar dados:', error);
         return of([]);
       })
     ).subscribe();
