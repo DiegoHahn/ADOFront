@@ -12,7 +12,13 @@
     <div class="form-group">
       <label for="token">Token:</label>
       <div class="input-wrapper">
-        <input type="text" id="token" formControlName="token" placeholder="Informe o Token" (blur)="updateErrors('token')">
+        <input 
+        type="text" 
+        id="token" 
+        formControlName="token" 
+        [placeholder]="form.get('token')?.disabled ? '***********************' : 'Informe o Token'" 
+        (blur)="updateErrors('token')"
+      >
       </div>
       <div *ngFor="let error of errors['token']" class="error-message">{{ error }}</div>
     </div>

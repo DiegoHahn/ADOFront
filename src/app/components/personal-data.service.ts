@@ -12,7 +12,7 @@ export class PersonalDataService {
   constructor(private http: HttpClient) { }
 
   saveUserInfo(userInformation: UserInformation): Observable<any> {
-    return this.http.post(`${this.apiUrl}/saveOrUpdate`, userInformation, { responseType: 'text' }).pipe(
+    return this.http.post(this.apiUrl, userInformation, { responseType: 'text' }).pipe(
       tap(response => {
         console.log('Resposta do servidor:', response);
       }),
@@ -22,6 +22,7 @@ export class PersonalDataService {
       })
     );
   }
+  
   getUserInformation(email: string): Observable<UserInformation> {
     const body = { email: email };
     return this.http.post<UserInformation>(`${this.apiUrl}/details`, body);

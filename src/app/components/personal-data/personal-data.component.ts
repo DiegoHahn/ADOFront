@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class PersonalDataComponent implements OnInit {
   form!: FormGroup;
-  errors: { [key: string]: string[] } = { email: [], board: [] };
+  errors: { [key: string]: string[] } = { email: [], board: [], token: [] };
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
@@ -36,6 +36,21 @@ export class PersonalDataComponent implements OnInit {
         this.updateErrors(key);
       });
     });
+
+    this.personalDataService.getUserInformation(email || '').pipe(
+      tap(userInformation => {
+        if (userInformation) {
+          this.form.patchValue(userInformation);
+        }
+        if (userInformation.hasToken) {
+          this.form.get('token')?.disable();
+        }
+      }),
+      catchError(error => {
+        console.error('Erro ao carregar dados:', error);
+        return of(null);
+      })
+    ).subscribe();
   }
 
   updateErrors(field: string): void {
@@ -57,16 +72,23 @@ export class PersonalDataComponent implements OnInit {
       this.errorMessage = null;
 
       this.personalDataService.saveUserInfo(this.form.value).pipe(
-        tap(() => {
-          this.router.navigate(['/activity-form']);
-        }),
         catchError(error => {
-          console.error('Erro ao salvar dados:', error);
-          this.successMessage = null;
-          this.errorMessage = error;
-          return of(null);
+          if (error.status === 401) {
+            this.errorMessage = 'Token inválido ou expirado. Por favor, insira um token válido.';
+            this.form.get('token')?.enable();
+            this.form.get('token')?.setValidators([Validators.required]);
+          } else if (error.status === 404) {
+            this.errorMessage = 'Usuário não encontrado para o email fornecido.';
+          } else {
+            this.errorMessage = 'Erro ao salvar dados. Por favor, tente novamente.';
+          }
+          return of(null); 
         })
-      ).subscribe();
+      ).subscribe(success => {
+        if (success) { 
+          this.router.navigate(['/activity-form']);
+        }
+      });
     } else {
       Object.keys(this.form.controls).forEach(key => {
         this.updateErrors(key);
@@ -74,4 +96,3 @@ export class PersonalDataComponent implements OnInit {
     }
   }
 }
-

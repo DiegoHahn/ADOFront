@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { catchError, map, of, tap } from 'rxjs';
 import { TimerService } from '../timer.service';
 import { UserInformation } from '../user-information';
+import { PersonalDataService } from '../personal-data.service';
 
 @Component({
   selector: 'app-activity-form',
@@ -23,10 +24,12 @@ export class ActivityFormComponent implements OnInit {
     private formBuilder: FormBuilder,
     private workItemService: WorkItemService,  
     public timerService: TimerService,
-    private router: Router
+    private router: Router,
+    private personalDataService: PersonalDataService
   ) { }
 
   ngOnInit() {
+    const email = localStorage.getItem('email');
     this.form = this.formBuilder.group({
       board: [''],
       userStoryId: [''],
@@ -36,11 +39,11 @@ export class ActivityFormComponent implements OnInit {
       remainingWork: [],
       startTime: [],
       completedWork: [''],
-      userId: [''] 
+      userId: ['']
     });
 
     this.setupTimerSubscriptions();
-    this.loadUserInformation();
+    this.loadUserInformationFromDatabase(email || '');
   }
 
   private setupTimerSubscriptions() {
@@ -52,26 +55,34 @@ export class ActivityFormComponent implements OnInit {
     });
   }
 
-  private loadUserInformation() {
-    const userInformation = this.getUserInformationFromStorage();
-    if (userInformation) {
-      this.form.get('board')?.setValue(userInformation.board); //TODO: pegar do banco de dados ao invez do localStorage
-      this.form.get('userId')?.setValue(userInformation.userId);
+  private loadUserInformationFromDatabase(email: string) {
+    if (!email) {
+      console.error("Email não encontrado no localStorage.");
+      return;
     }
-    if (!this.form.get('board')?.value) {
-      this.router.navigate(['/personal-data']);
-    }
-  }
 
-  private getUserInformationFromStorage(): UserInformation {
-    return JSON.parse(localStorage.getItem('userInformation') || 'null');
+    this.personalDataService.getUserInformation(email).pipe(
+      tap(userInformation => {
+        if (userInformation) {
+          this.form.patchValue({
+            board: userInformation.board,
+            userId: userInformation.userId
+          });
+        }
+        if (!this.form.get('board')?.value) {
+          this.router.navigate(['/personal-data']);
+        }
+      }),
+      catchError(error => {
+        console.error('Erro ao carregar informações do usuário:', error);
+        return of(null);
+      })
+    ).subscribe();
   }
 
   onUserStoryChange() {
     const userStoryId = this.form.get('userStoryId')?.value;
-    const userInformation = this.getUserInformationFromStorage();
-    const userId = userInformation?.userId;
-
+    const userId = this.form.get('userId')?.value;
     if (userStoryId && userId) {
       this.loadWorkItems(userStoryId, userId);
     }
