@@ -1,6 +1,6 @@
 <div class="control-buttons">
-  <button (click)="start()"[disabled]="isFormIncomplete">Iniciar</button>
-  <button (click)="stop()" [disabled]="isFormIncomplete">Parar</button>
-  <button (click)="cancel()" [disabled]="isFormIncomplete">Cancelar</button>
+  <button (click)="start()"[disabled]="isStartIncomplete">Iniciar</button>
+  <button (click)="stop()" [disabled]="isStopIncomplete">Parar</button>
+  <button (click)="cancel()" [disabled]="isStartIncomplete">Cancelar</button>
 </div>
   

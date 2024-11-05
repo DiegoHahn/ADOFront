@@ -21,12 +21,22 @@ export class ControlButtonsComponent {
     return this.controlContainer.control as FormGroup;
   }
 
-  get isFormIncomplete(): boolean {
+  get isStartIncomplete(): boolean {
     return !this.form.get('board')?.value ||
            !this.form.get('userStoryId')?.value ||
            !this.form.get('task')?.value ||
            !this.form.get('originalEstimate')?.value ||
            !this.form.get('remainingWork')?.value;
+  }
+
+  get isStopIncomplete(): boolean {
+    return !this.form.get('board')?.value ||
+           !this.form.get('userStoryId')?.value ||
+           !this.form.get('task')?.value ||
+           !this.form.get('originalEstimate')?.value ||
+           !this.form.get('remainingWork')?.value ||
+           !this.form.get('startTime')?.value ||
+           !this.form.get('completedWork')?.value;
   }
 
   start() {

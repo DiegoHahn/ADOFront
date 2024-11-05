@@ -31,7 +31,7 @@ export class ActivityFormComponent implements OnInit {
   ngOnInit() {
     const email = localStorage.getItem('email');
     this.form = this.formBuilder.group({
-      board: [''],
+      board: [{value: '', disabled: 'true'}],
       userStoryId: [''],
       concluded: [false],
       task: [null],
