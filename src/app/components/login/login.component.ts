@@ -62,7 +62,6 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/personal-data']);
             localStorage.setItem('email', this.loginForm.get('email')?.value);
           } else {
-            // todo: adicionar tratamento de erro em tela
             console.error('Erro ao buscar informações do usuário:', error);
           }
           return of(null);

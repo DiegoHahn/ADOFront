@@ -44,6 +44,9 @@ export class ActivityFormComponent implements OnInit {
 
     this.setupTimerSubscriptions();
     this.loadUserInformationFromDatabase(email || '');
+    
+    this.timerService.resetTimer();
+    this.form.reset();
   }
 
   private setupTimerSubscriptions() {

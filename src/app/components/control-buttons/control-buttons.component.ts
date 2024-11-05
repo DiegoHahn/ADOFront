@@ -21,6 +21,14 @@ export class ControlButtonsComponent {
     return this.controlContainer.control as FormGroup;
   }
 
+  get isFormIncomplete(): boolean {
+    return !this.form.get('board')?.value ||
+           !this.form.get('userStoryId')?.value ||
+           !this.form.get('task')?.value ||
+           !this.form.get('originalEstimate')?.value ||
+           !this.form.get('remainingWork')?.value;
+  }
+
   start() {
     if (!this.isTimerRunning) {
       this.timerService.startTimer();
@@ -36,7 +44,22 @@ export class ControlButtonsComponent {
     this.workItemService.saveWorkItem(this.form.value).subscribe();
   }
 
-  exit() {
-    console.log("Exit");
+  cancel() {
+    this.timerService.resetTimer();
+    this.isTimerRunning = false;
+    const boardValue = this.form.get('board')?.value;
+    const userIdValue = this.form.get('userId')?.value;
+
+    this.form.reset({
+      board: boardValue,
+      userStoryId: '',
+      concluded: false,
+      task: null,
+      originalEstimate: '',
+      remainingWork: '',
+      startTime: '',
+      completedWork: '00:00:00',
+      userId: userIdValue
+    });
   }
 }
