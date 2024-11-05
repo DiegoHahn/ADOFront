@@ -11,22 +11,11 @@ export class PersonalDataService {
 
   constructor(private http: HttpClient) { }
 
-  // saveUserInfo(userInformation: UserInformation): Observable<any> {
-  //   return this.http.post(this.apiUrl, userInformation, { responseType: 'text' }).pipe(
-  //     tap(response => {
-  //       console.log('Resposta do servidor:', response);
-  //     }),
-  //     catchError(error => {
-  //       console.error('Erro ao salvar ou atualizar dados:', error);
-  //       return of(null);
-  //     })
-  //   );
-  // }
-  saveUserInfo(userInfo: any): Observable<any> {
-    return this.http.post<any>('http://localhost:8080/userInformation', userInfo).pipe(
+  saveUserInfo(userInfo: any): Observable<string> {
+    return this.http.post(this.apiUrl, userInfo, { responseType: 'text' }).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Erro ao salvar ou atualizar dados:', error);
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }

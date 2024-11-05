@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { catchError, of, tap, debounceTime } from 'rxjs';
-import { PersonalDataService } from '../personal-data.service';
 import { Router } from '@angular/router';
+import { catchError, debounceTime, of, tap } from 'rxjs';
+import { PersonalDataService } from '../personal-data.service';
 
 @Component({
   selector: 'app-personal-data',
@@ -19,7 +19,6 @@ export class PersonalDataComponent implements OnInit {
     private formBuilder: FormBuilder,
     private personalDataService: PersonalDataService,
     private router: Router,
-    private cdr: ChangeDetectorRef,
     private ngZone: NgZone
   ) {}
 
@@ -68,90 +67,12 @@ export class PersonalDataComponent implements OnInit {
     }
   }
 
-  // onSubmit(): void {
-  //   if (this.form.valid) {
-  //     this.successMessage = null;
-  //     this.errorMessage = null;
-  //     this.personalDataService.saveUserInfo(this.form.value).pipe(
-  //       catchError(error => {
-  //         console.log('Caught error:', error);
-  //         this.ngZone.run(() => {
-  //           if (error.status === 401) {
-  //             this.errorMessage = 'Token inválido ou expirado. Por favor, insira um token válido.';
-  //             const tokenControl = this.form.get('token');
-  //             tokenControl?.enable();
-  //             tokenControl?.setValidators([Validators.required]);
-  //             tokenControl?.updateValueAndValidity();
-  //           } else if (error.status === 404) {
-  //             this.errorMessage = 'Usuário não encontrado para o email fornecido.';
-  //           } else {
-  //             this.errorMessage = 'Erro ao salvar dados. Por favor, tente novamente.';
-  //           }
-  //         });
-  //         return of(null);
-  //       })
-  //     ).subscribe(success => {
-  //       if (success) {
-  //         this.router.navigate(['/activity-form']);
-  //       }
-  //     });
-  //   } else {
-  //     Object.keys(this.form.controls).forEach(key => {
-  //       this.updateErrors(key);
-  //     });
-  //   }
-  // }
-
-  // isTokenEnabled(): boolean {
-  //   const tokenControl = this.form.get('token');
-  //   return !tokenControl?.disabled || this.errors['token'].length > 0;
-  // }
-  // onSubmit(): void {
-  //   if (this.form.valid) {
-  //     this.successMessage = null;
-  //     this.errorMessage = null;
-  //     this.personalDataService.saveUserInfo(this.form.value).pipe(
-  //       catchError(error => {
-  //         console.log('Caught error:', error);
-  //         this.ngZone.run(() => {
-  //           if (error.status === 401) {
-  //             this.errorMessage = 'Token inválido ou expirado. Por favor, insira um token válido.';
-  //             const tokenControl = this.form.get('token');
-  //             tokenControl?.enable();
-  //             tokenControl?.setValidators([Validators.required]);
-  //             tokenControl?.updateValueAndValidity();
-  //           } else if (error.status === 404) {
-  //             this.errorMessage = 'Usuário não encontrado para o email fornecido.';
-  //           } else {
-  //             this.errorMessage = 'Erro ao salvar dados. Por favor, tente novamente.';
-  //           }
-  //         });
-  //         return of(null);
-  //       })
-  //     ).subscribe(success => {
-  //       if (success) {
-  //         this.router.navigate(['/activity-form']);
-  //       }
-  //     });
-  //   } else {
-  //     Object.keys(this.form.controls).forEach(key => {
-  //       this.updateErrors(key);
-  //     });
-  //   }
-  // }
   onSubmit(): void {
     if (this.form.valid) {
       this.successMessage = null;
       this.errorMessage = null;
-  
-      this.personalDataService.saveUserInfo(this.form.value).subscribe(
-        success => {
-          if (success) {
-            this.router.navigate(['/activity-form']);
-          }
-        },
-        error => {
-          console.log('Caught error in subscribe:', error);
+      this.personalDataService.saveUserInfo(this.form.value).pipe(
+        catchError(error => {
           this.ngZone.run(() => {
             if (error.status === 401) {
               this.errorMessage = 'Token inválido ou expirado. Por favor, insira um token válido.';
@@ -165,50 +86,17 @@ export class PersonalDataComponent implements OnInit {
               this.errorMessage = 'Erro ao salvar dados. Por favor, tente novamente.';
             }
           });
+          return of(null);
+        })
+      ).subscribe(success => {
+        if (success) {
+          this.router.navigate(['/activity-form']);
         }
-      );
+      });
     } else {
       Object.keys(this.form.controls).forEach(key => {
         this.updateErrors(key);
       });
     }
   }
-  // onSubmit(): void {
-  //   if (this.form.valid) {
-  //     this.successMessage = null;
-  //     this.errorMessage = null;
-  
-  //     this.personalDataService.saveUserInfo(this.form.value).subscribe(
-  //       (success) => {
-  //         if (success) {
-  //           this.router.navigate(['/activity-form']);
-  //         }
-  //       },
-  //       (error) => {
-  //         console.log('Caught error in subscribe:', error);
-  //         this.ngZone.run(() => {
-  //           if (error.status === 401) {
-  //             this.errorMessage = 'Token inválido ou expirado. Por favor, insira um token válido.';
-  //             const tokenControl = this.form.get('token');
-  //             if (tokenControl) {
-  //               tokenControl.enable();
-  //               tokenControl.setValue(''); // Limpa o valor do campo
-  //               tokenControl.setValidators([Validators.required]); // Adiciona validação
-  //               tokenControl.updateValueAndValidity();
-  //             }
-  //           } else if (error.status === 404) {
-  //             this.errorMessage = 'Usuário não encontrado para o email fornecido.';
-  //           } else {
-  //             this.errorMessage = 'Erro ao salvar dados. Por favor, tente novamente.';
-  //           }
-  //         });
-  //         this.cdr.detectChanges(); 
-  //       }
-  //     );
-  //   } else {
-  //     Object.keys(this.form.controls).forEach((key) => {
-  //       this.updateErrors(key);
-  //     });
-  //   }
-  // }
 }

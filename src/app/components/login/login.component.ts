@@ -53,7 +53,6 @@ export class LoginComponent implements OnInit {
           if (response) {
             this.userInformation = response;
             localStorage.setItem('email', this.loginForm.get('email')?.value);
-            //todo: dependendo do navegador não esta setando o email no localStorage
             localStorage.setItem('userInformation', JSON.stringify(this.userInformation));
             this.router.navigate(['/activity-form']);
           }
