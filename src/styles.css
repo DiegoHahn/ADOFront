@@ -6,3 +6,15 @@ body {
     font-family: Helvetica, sans-serif; 
   }
   
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.success-message{
+  color: #587799;
+  font-size: 14px;
+  margin-top: 5px;
+}
+  

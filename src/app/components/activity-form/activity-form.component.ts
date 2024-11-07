@@ -1,52 +1,68 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { TargetWorkItem } from '../target-workItem';
-import { WorkItemService } from '../work-item.service';
-
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { catchError, of, tap, map } from 'rxjs';
 import { Router } from '@angular/router';
-import { catchError, map, of, tap } from 'rxjs';
 import { TimerService } from '../timer.service';
-import { UserInformation } from '../user-information';
+import { WorkItemService } from '../work-item.service';
 import { PersonalDataService } from '../personal-data.service';
+import { TargetWorkItem } from '../target-workItem';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-activity-form',
   templateUrl: './activity-form.component.html',
   styleUrls: ['./activity-form.component.css']
 })
-export class ActivityFormComponent implements OnInit {
+export class ActivityFormComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   workItems: TargetWorkItem[] = [];
   selectedWorkItem: TargetWorkItem | null = null;
- 
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
+
   constructor(
     private formBuilder: FormBuilder,
-    private workItemService: WorkItemService,  
+    private workItemService: WorkItemService,
     public timerService: TimerService,
     private router: Router,
-    private personalDataService: PersonalDataService
+    private personalDataService: PersonalDataService,
+    private ngZone: NgZone
   ) { }
 
   ngOnInit() {
     const email = localStorage.getItem('email');
     this.form = this.formBuilder.group({
-      board: [{value: '', disabled: 'true'}],
+      board: [{ value: '', disabled: true }],
       userStoryId: [''],
       concluded: [false],
       task: [null],
-      originalEstimate: [],
-      remainingWork: [],
-      startTime: [],
+      originalEstimate: [''],
+      remainingWork: [''],
+      startTime: [''],
       completedWork: [''],
       userId: ['']
     });
 
     this.setupTimerSubscriptions();
     this.loadUserInformationFromDatabase(email || '');
-    
+
     this.timerService.resetTimer();
-    this.form.reset();
+    this.form.reset({
+      board: { value: '', disabled: false },
+      userStoryId: '',
+      concluded: false,
+      task: null,
+      originalEstimate: '',
+      remainingWork: '',
+      startTime: '',
+      completedWork: '',
+      userId: ''
+    });
+  }
+
+  ngOnDestroy() {
+    this.timerService.stopTimer();
+    this.timerService.resetTimer();
   }
 
   private setupTimerSubscriptions() {
@@ -60,10 +76,9 @@ export class ActivityFormComponent implements OnInit {
 
   private loadUserInformationFromDatabase(email: string) {
     if (!email) {
-      console.error("Email não encontrado no localStorage.");
-      return;
+      this.errorMessage = 'Erro ao carregar informações do usuário.';
+        return;
     }
-
     this.personalDataService.getUserInformation(email).pipe(
       tap(userInformation => {
         if (userInformation) {
@@ -86,6 +101,13 @@ export class ActivityFormComponent implements OnInit {
   onUserStoryChange() {
     const userStoryId = this.form.get('userStoryId')?.value;
     const userId = this.form.get('userId')?.value;
+
+    this.errorMessage = null;
+    this.workItems = [];
+    this.form.get('task')?.reset();
+    this.form.get('originalEstimate')?.reset();
+    this.form.get('remainingWork')?.reset();
+
     if (userStoryId && userId) {
       this.loadWorkItems(userStoryId, userId);
     }
@@ -103,10 +125,17 @@ export class ActivityFormComponent implements OnInit {
           this.selectedWorkItem = this.workItems[0];
           this.form.get('task')?.setValue(this.selectedWorkItem);
           this.onWorkItemSelect();
+        } else {
+          this.ngZone.run(() => {
+            this.errorMessage = 'Nenhuma task encontrada para a User Story informada.';
+          });
         }
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('Erro ao buscar dados:', error);
+        this.ngZone.run(() => {
+          this.errorMessage = 'Erro ao buscar tasks. Verifique os dados de usuário informados';
+        });
         return of([]);
       })
     ).subscribe();
@@ -119,6 +148,19 @@ export class ActivityFormComponent implements OnInit {
         originalEstimate: selectedWorkItem.originalEstimate,
         remainingWork: selectedWorkItem.remainingWork
       });
+    }
+  }
+
+  handleStatus(status: { type: string, message: string }) {
+    if (status.type === 'success') {
+      this.successMessage = status.message;
+      this.errorMessage = null;
+    } else if (status.type === 'error') {
+      this.errorMessage = status.message;
+      this.successMessage = null;
+    } else if (status.type === 'clear') {
+      this.successMessage = null;
+      this.errorMessage = null;
     }
   }
 }

@@ -3,7 +3,7 @@
     <div class="form-group board-group">
       <label for="board">Board:</label>
       <div class="board-wrapper">
-        <input type="text" id="board" formControlName="board"/>
+        <input type="text" id="board" formControlName="board" placeholder="Informe o Board" />
         <a [routerLink]="['/personal-data']">
           <img src="assets/img/settings.png" alt="Configurações" class="settings-icon" />
         </a>
@@ -34,28 +34,31 @@
     <div class="form-group time-group">
       <div class="time-box">
         <label for="original-estimate">Original Estimate:</label>
-        <p class="time-field" id="original-estimate">{{form.get('originalEstimate')?.value}}</p>
+        <p class="time-field" id="original-estimate">{{ form.get('originalEstimate')?.value }}</p>
       </div>
 
       <div class="time-box">
         <label for="remaining-work">Remaining:</label>
-        <p class="time-field" id="remaining-work">{{form.get('remainingWork')?.value}}</p>
+        <p class="time-field" id="remaining-work">{{ form.get('remainingWork')?.value }}</p>
       </div>
     </div>
-      
+
     <div class="form-group time-group">
-        <div class="time-box">
-          <label for="start-time">Início:</label>
-          <input class="time-field" type="text" id="start-time" [value]="(timerService.startTime$ | async)" disabled />
-        </div>
-        
-        <div class="time-box">
-          <label for="completed-work">Tempo:</label>
-          <input type="text" id="completed-work" [value]="timerService.completedWork$ | async" disabled />
-        </div>
+      <div class="time-box">
+        <label for="start-time">Início:</label>
+        <input class="time-field" type="text" id="start-time" [value]="(timerService.startTime$ | async)" disabled />
       </div>
+      
+      <div class="time-box">
+        <label for="completed-work">Tempo:</label>
+        <input type="text" id="completed-work" [value]="(timerService.completedWork$ | async)" disabled />
+      </div>
+    </div>
 
-    <app-control-buttons></app-control-buttons>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
+    <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+
+    <app-control-buttons (statusChanged)="handleStatus($event)"></app-control-buttons>  
   </form>
 </div>

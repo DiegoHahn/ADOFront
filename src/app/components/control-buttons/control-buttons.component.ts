@@ -1,7 +1,8 @@
 import { WorkItemService } from './../work-item.service';
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { TimerService } from '../timer.service';
 import { ControlContainer, FormGroup } from '@angular/forms';
+import { catchError, of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-control-buttons',
@@ -10,6 +11,7 @@ import { ControlContainer, FormGroup } from '@angular/forms';
 })
 export class ControlButtonsComponent {
   isTimerRunning = false; 
+  @Output() statusChanged = new EventEmitter<{ type: string, message: string }>();
 
   constructor(
     private timerService: TimerService,
@@ -51,15 +53,29 @@ export class ControlButtonsComponent {
       this.timerService.stopTimer();
       this.isTimerRunning = false;
     }
-    this.workItemService.saveWorkItem(this.form.value).subscribe();
+    this.workItemService.saveWorkItem(this.form.value).pipe(
+      tap(() => {
+        this.statusChanged.emit({ type: 'success', message: 'Registro salvo com sucesso!' });
+        setTimeout(() => (this.resetForm()), 2000)
+      }),
+      catchError(error => {
+        if (error.status === 401) {
+          this.statusChanged.emit({ type: 'error', message: 'Token expirado. Ao atualizar os dados de usuário esse registro sera salvo automaticamente' });
+        }
+        return of(null);
+      })
+    ).subscribe();
   }
 
   cancel() {
-    this.timerService.resetTimer();
     this.isTimerRunning = false;
+    this.resetForm();
+  }
+
+  resetForm(){
+    this.timerService.resetTimer();
     const boardValue = this.form.get('board')?.value;
     const userIdValue = this.form.get('userId')?.value;
-
     this.form.reset({
       board: boardValue,
       userStoryId: '',
@@ -71,5 +87,7 @@ export class ControlButtonsComponent {
       completedWork: '00:00:00',
       userId: userIdValue
     });
+
+    this.statusChanged.emit({ type: 'clear', message: '' });
   }
 }

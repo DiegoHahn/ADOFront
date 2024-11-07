@@ -52,7 +52,6 @@ input {
   font-size: 16px;
 }
 
-
 .login-button {
   width: 100%;
   padding: 10px;
@@ -72,10 +71,4 @@ input {
 .login-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
-}
-
-.error-message {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
 }

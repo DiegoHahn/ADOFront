@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { TargetWorkItem } from './target-workItem';
 
 @Injectable({
@@ -17,7 +17,15 @@ export class WorkItemService {
     return this.http.post<TargetWorkItem[]>(`${this.apiUrl}/userstory`, body);
   }
 
-  saveWorkItem(workItem: TargetWorkItem): Observable<TargetWorkItem> {
-    return this.http.post<TargetWorkItem>(this.activityRecordUrl, workItem);
+  saveWorkItem(workItem: any): Observable<any> {
+    return this.http.post(this.activityRecordUrl, workItem, { responseType: 'text' }).pipe(
+      map(response => {
+        return response || {};
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Erro ao salvar o item de trabalho:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }
