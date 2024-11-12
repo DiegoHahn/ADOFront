@@ -7,8 +7,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ActivityFormComponent } from './components/activity-form/activity-form.component';
 import { ControlButtonsComponent } from './components/control-buttons/control-buttons.component';
-import { PersonalDataComponent } from './components/personal-data/personal-data.component';
 import { LoginComponent } from './components/login/login.component';
+import { PersonalDataComponent } from './components/personal-data/personal-data.component';
 
 
 @NgModule({
@@ -18,7 +18,6 @@ import { LoginComponent } from './components/login/login.component';
     ControlButtonsComponent,
     LoginComponent,
     PersonalDataComponent
-   
   ],
   imports: [
     BrowserModule,
@@ -26,6 +25,7 @@ import { LoginComponent } from './components/login/login.component';
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule
+    //faz sentido aplicar lazy loading quando são poucos modulos ou é o padrão?
   ],
   providers: [],
   bootstrap: [AppComponent]

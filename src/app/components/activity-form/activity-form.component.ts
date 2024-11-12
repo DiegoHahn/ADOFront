@@ -32,7 +32,7 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const email = localStorage.getItem('email');
     this.form = this.formBuilder.group({
-      board: [{ value: '', disabled: true }],
+      board: [''],
       userStoryId: [''],
       concluded: [false],
       task: [null],
@@ -48,7 +48,7 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
 
     this.timerService.resetTimer();
     this.form.reset({
-      board: { value: '', disabled: false },
+      board: { value: ''},
       userStoryId: '',
       concluded: false,
       task: null,
