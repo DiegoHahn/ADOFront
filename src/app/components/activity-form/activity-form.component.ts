@@ -101,6 +101,7 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
   onUserStoryChange() {
     const userStoryId = this.form.get('userStoryId')?.value;
     const userId = this.form.get('userId')?.value;
+    const board = this.form.get('board')?.value;
 
     this.errorMessage = null;
     this.workItems = [];
@@ -108,13 +109,13 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
     this.form.get('originalEstimate')?.reset();
     this.form.get('remainingWork')?.reset();
 
-    if (userStoryId && userId) {
-      this.loadWorkItems(userStoryId, userId);
+    if (userStoryId && userId && board) {
+      this.loadWorkItems(userStoryId, userId, board);
     }
   }
 
-  private loadWorkItems(userStoryId: string, userId: string) {
-    this.workItemService.getWorkItemsForUserStory(userStoryId, userId).pipe(
+  private loadWorkItems(userStoryId: string, userId: string, board: string) {
+    this.workItemService.getWorkItemsForUserStory(userStoryId, userId, board).pipe(
       map((items: any[]) => items.map(item => ({
         ...item,
         assignedToAzureUserID: item.assignedToUserSK
