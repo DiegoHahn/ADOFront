@@ -53,6 +53,7 @@ export class ControlButtonsComponent {
       this.timerService.stopTimer();
       this.isTimerRunning = false;
     }
+    this.form.get('board')?.enable({ emitEvent: false });
     this.workItemService.saveWorkItem(this.form.value).pipe(
       tap(() => {
         this.statusChanged.emit({ type: 'success', message: 'Registro salvo com sucesso!' });
@@ -77,7 +78,7 @@ export class ControlButtonsComponent {
     const boardValue = this.form.get('board')?.value;
     const userIdValue = this.form.get('userId')?.value;
     this.form.reset({
-      board: boardValue,
+      board: {value:boardValue, disabled: 'true' },
       userStoryId: '',
       concluded: false,
       task: null,

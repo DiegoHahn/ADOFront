@@ -42,13 +42,13 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
       completedWork: [''],
       userId: ['']
     });
-
+    this.form.get('board')?.disable({ emitEvent: false });
     this.setupTimerSubscriptions();
     this.loadUserInformationFromDatabase(email || '');
 
     this.timerService.resetTimer();
     this.form.reset({
-      board: { value: ''},
+      board: { value: '', disable: 'true'},
       userStoryId: '',
       concluded: false,
       task: null,
