@@ -1,31 +1,17 @@
-import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { ActivityFormComponent } from './components/activity-form/activity-form.component';
-import { ControlButtonsComponent } from './components/control-buttons/control-buttons.component';
-import { LoginComponent } from './components/login/login.component';
-import { PersonalDataComponent } from './components/personal-data/personal-data.component';
-
+import { NgModule } from "@angular/core";
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { HttpClientModule } from "@angular/common/http";
+import { BrowserModule } from "@angular/platform-browser";
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ActivityFormComponent,
-    ControlButtonsComponent,
-    LoginComponent,
-    PersonalDataComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule,
-    HttpClientModule,
-    ReactiveFormsModule
-    //faz sentido aplicar lazy loading quando são poucos modulos ou é o padrão?
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -54,12 +54,12 @@ export class LoginComponent implements OnInit {
             this.userInformation = response;
             localStorage.setItem('email', this.loginForm.get('email')?.value);
             localStorage.setItem('userInformation', JSON.stringify(this.userInformation));
-            this.router.navigate(['/activity-form']);
+            this.router.navigate(['/activity-tracker', 'activity-form']);
           }
         }),
         catchError(error => {
           if (error.status === 404) {
-            this.router.navigate(['/personal-data']);
+            this.router.navigate(['/activity-tracker', '/personal-data']);
             localStorage.setItem('email', this.loginForm.get('email')?.value);
           } else {
             console.error('Erro ao buscar informações do usuário:', error);

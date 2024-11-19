@@ -90,7 +90,7 @@ export class PersonalDataComponent implements OnInit {
         })
       ).subscribe(success => {
         if (success) {
-          this.router.navigate(['/activity-form']);
+          this.router.navigate(['/activity-tracker', 'activity-form']);
         }
       });
     } else {

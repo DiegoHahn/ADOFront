@@ -1,21 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PersonalDataComponent } from './components/personal-data/personal-data.component';
-import { ActivityFormComponent } from './components/activity-form/activity-form.component';
-import { LoginComponent } from './components/login/login.component';
-
 
 export const routes: Routes = [
+    { path: '', redirectTo: 'activity-tracker', pathMatch: 'full' },
     {
-        path: '',
-        component: LoginComponent,
+        path: 'activity-tracker',
+        loadChildren: () => import('./components/time-tracker/time-tracker.module').then(m => m.TimeTrackerModule)
     },
-    { path:  'activity-form',
-        component: ActivityFormComponent
-    },
-    { path: 'personal-data',
-        component: PersonalDataComponent 
-    }
+    // { path:  'reports',
+    //   loadChildren: () => import('./components/reports/reports.module').then(m => m.ReportsModule)
+    // }
 ];
 
 @NgModule({

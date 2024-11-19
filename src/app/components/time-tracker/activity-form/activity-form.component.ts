@@ -4,9 +4,9 @@ import { catchError, of, tap, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { TimerService } from '../timer.service';
 import { WorkItemService } from '../work-item.service';
-import { PersonalDataService } from '../personal-data.service';
 import { TargetWorkItem } from '../target-workItem';
 import { HttpErrorResponse } from '@angular/common/http';
+import { PersonalDataService } from '../personal-data.service';
 
 @Component({
   selector: 'app-activity-form',
@@ -88,7 +88,7 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
           });
         }
         if (!this.form.get('board')?.value) {
-          this.router.navigate(['/personal-data']);
+          this.router.navigate(['/activity-tracker','personal-data']);
         }
       }),
       catchError(error => {
