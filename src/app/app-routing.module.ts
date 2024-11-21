@@ -7,9 +7,9 @@ export const routes: Routes = [
         path: 'activity-tracker',
         loadChildren: () => import('./components/time-tracker/time-tracker.module').then(m => m.TimeTrackerModule)
     },
-    // { path:  'reports',
-    //   loadChildren: () => import('./components/reports/reports.module').then(m => m.ReportsModule)
-    // }
+    { path:  'reports',
+      loadChildren: () => import('./components/reports/reports.module').then(m => m.ReportsModule)
+    }
 ];
 
 @NgModule({
