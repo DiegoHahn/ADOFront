@@ -46,7 +46,9 @@
     <div class="form-group time-group">
       <div class="time-box">
         <label for="start-time">Início:</label>
-        <input class="time-field" type="text" id="start-time" [value]="(timerService.startTime$ | async)" disabled />
+        <input class="time-field" type="text" id="start-time" 
+        [value]="form.get('startTime')?.value | date:'HH:mm'" disabled
+        />
       </div>
       
       <div class="time-box">

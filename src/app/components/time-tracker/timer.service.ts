@@ -14,7 +14,10 @@ export class TimerService {
   completedWork$ = this.completedWorkSource.asObservable();
 
   startTimer() {
-    this.startTimeSource.next(this.getCurrentTime());
+    const now = new Date();
+    const isoString = now.toISOString();
+    this.startTimeSource.next(isoString);
+
     interval(1000)
       .pipe(
         takeUntil(this.stopTimer$),
@@ -38,10 +41,5 @@ export class TimerService {
     const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
     const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
     return `${hours}:${minutes}:${remainingSeconds}`;
-  }
-
-  private getCurrentTime(): string {
-    const now = new Date();
-    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 }
