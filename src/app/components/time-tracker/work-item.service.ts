@@ -17,7 +17,8 @@ export class WorkItemService {
     return this.http.post<TargetWorkItem[]>(`${this.apiUrl}/userstory`, body);
   }
 
-  saveWorkItem(workItem: any): Observable<any> {
+  //TODO: ARRUMAR A TIPAGEM
+  saveWorkItem(workItem: any): Observable<any> { 
     return this.http.post(this.activityRecordUrl, workItem, { responseType: 'text' }).pipe(
       map(response => {
         return response || {};
