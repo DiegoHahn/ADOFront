@@ -20,8 +20,8 @@ export class UserActivityComponent {
   ngOnInit(): void {
   }
 
-  loadClients(pageIndex: number, pageSize: number){
-    this.activityRecordService.getActivitiesRecordsByDate('2', 0, 10).subscribe((response: ActivityRecordsPage) => {
+  loadClients(userID: number, date: String, pageIndex: number, pageSize: number){
+    this.activityRecordService.getActivitiesRecordsByDate(2, '28/11/2024', 0, 10).subscribe((response: ActivityRecordsPage) => {
       this.activityRecords = response.content;
       this.totalElements = response.totalElements;
       console.log(this.activityRecords);

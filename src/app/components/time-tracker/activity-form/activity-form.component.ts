@@ -116,10 +116,6 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
 
   private loadWorkItems(userStoryId: string, userId: string, board: string) {
     this.workItemService.getWorkItemsForUserStory(userStoryId, userId, board).pipe(
-      // map((items: any[]) => items.map(item => ({
-      //   ...item,
-      //   assignedToAzureUserID: item.assignedToUserSK
-      // }))),
       tap((items: TargetWorkItem[]) => {
         this.workItems = items;
         if (this.workItems.length > 0) {
