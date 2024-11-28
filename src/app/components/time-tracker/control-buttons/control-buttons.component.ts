@@ -38,7 +38,7 @@ export class ControlButtonsComponent {
            !this.form.get('originalEstimate')?.value ||
            !this.form.get('remainingWork')?.value ||
            !this.form.get('startTime')?.value ||
-           !this.form.get('completedWork')?.value;
+           !this.form.get('currentTrackedTime')?.value;
   }
 
   start() {
@@ -85,7 +85,7 @@ export class ControlButtonsComponent {
       originalEstimate: '',
       remainingWork: '',
       startTime: '',
-      completedWork: '00:00:00',
+      currentTrackedTime: '00:00:00',
       userId: userIdValue
     });
 

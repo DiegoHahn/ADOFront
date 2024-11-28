@@ -1,7 +1,7 @@
 import { ActivityRecord } from './../../ActivityRecord';
 import { Component } from '@angular/core';
 import { ActivityRecordService } from '../activity-record.service';
-import { ActivityRecordResponse } from '../../ActivityRecordResponse';
+import { ActivityRecordsPage } from '../../ActivityRecordsPage';
 
 @Component({
   selector: 'app-user-activity',
@@ -21,7 +21,7 @@ export class UserActivityComponent {
   }
 
   loadClients(pageIndex: number, pageSize: number){
-    this.activityRecordService.getActivitiesRecordsByDate('2', 0, 10).subscribe((response: ActivityRecordResponse) => {
+    this.activityRecordService.getActivitiesRecordsByDate('2', 0, 10).subscribe((response: ActivityRecordsPage) => {
       this.activityRecords = response.content;
       this.totalElements = response.totalElements;
       console.log(this.activityRecords);

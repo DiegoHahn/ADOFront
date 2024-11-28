@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { ActivityRecordResponse } from "../ActivityRecordResponse";
+import { ActivityRecordsPage } from "../ActivityRecordsPage";
 
 
 @Injectable({
@@ -12,12 +12,12 @@ import { ActivityRecordResponse } from "../ActivityRecordResponse";
   
     constructor(private http: HttpClient) { }
   
-    getActivitiesRecordsByDate(userId: string, pageIndex: number, pageSize: number): Observable<ActivityRecordResponse>{
+    getActivitiesRecordsByDate(userId: string, pageIndex: number, pageSize: number): Observable<ActivityRecordsPage>{
         let params = new HttpParams()
         params = params
           .set('userId', userId)
           .set('page', pageIndex)
           .set('size', pageSize);
-        return this.http.get<ActivityRecordResponse>(this.activityRecordUrl, {params})
+        return this.http.get<ActivityRecordsPage>(this.activityRecordUrl, {params})
     }
   }

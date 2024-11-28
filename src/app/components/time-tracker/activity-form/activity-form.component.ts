@@ -39,7 +39,7 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
       originalEstimate: [''],
       remainingWork: [''],
       startTime: [''],
-      completedWork: [''],
+      currentTrackedTime: [''],
       userId: ['']
     });
     this.form.get('board')?.disable({ emitEvent: false });
@@ -55,7 +55,7 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
       originalEstimate: '',
       remainingWork: '',
       startTime: '',
-      completedWork: '',
+      currentTrackedTime: '',
       userId: ''
     });
   }
@@ -69,8 +69,8 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
     this.timerService.startTime$.subscribe(time => {
       this.form.get('startTime')?.setValue(time);
     });
-    this.timerService.completedWork$.subscribe(completedWork => {
-      this.form.get('completedWork')?.setValue(completedWork);
+    this.timerService.currentTrackedTime$.subscribe(currentTrackedTime => {
+      this.form.get('currentTrackedTime')?.setValue(currentTrackedTime);
     });
   }
 
@@ -116,10 +116,10 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
 
   private loadWorkItems(userStoryId: string, userId: string, board: string) {
     this.workItemService.getWorkItemsForUserStory(userStoryId, userId, board).pipe(
-      map((items: any[]) => items.map(item => ({
-        ...item,
-        assignedToAzureUserID: item.assignedToUserSK
-      }))),
+      // map((items: any[]) => items.map(item => ({
+      //   ...item,
+      //   assignedToAzureUserID: item.assignedToUserSK
+      // }))),
       tap((items: TargetWorkItem[]) => {
         this.workItems = items;
         if (this.workItems.length > 0) {

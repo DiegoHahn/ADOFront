@@ -7,11 +7,11 @@ import { map } from 'rxjs/operators';
 })
 export class TimerService {
   private startTimeSource = new BehaviorSubject<string>('');
-  private completedWorkSource = new BehaviorSubject<string>('00:00:00');
+  private currentTrackedTimeSource = new BehaviorSubject<string>('00:00:00');
   private stopTimer$ = new Subject<void>(); 
 
   startTime$ = this.startTimeSource.asObservable();
-  completedWork$ = this.completedWorkSource.asObservable();
+  currentTrackedTime$ = this.currentTrackedTimeSource.asObservable();
 
   startTimer() {
     const now = new Date();
@@ -23,7 +23,7 @@ export class TimerService {
         takeUntil(this.stopTimer$),
         map(seconds => this.formatTime(seconds)) 
       )
-      .subscribe(time => this.completedWorkSource.next(time));
+      .subscribe(time => this.currentTrackedTimeSource.next(time));
   }
 
   stopTimer() {
@@ -33,7 +33,7 @@ export class TimerService {
   resetTimer() {
     this.stopTimer();
     this.startTimeSource.next('');
-    this.completedWorkSource.next('00:00:00');
+    this.currentTrackedTimeSource.next('00:00:00');
   }
 
   private formatTime(seconds: number): string {
