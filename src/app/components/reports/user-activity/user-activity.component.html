@@ -1,3 +1,36 @@
-<p>user-activity works!</p>
-<button (click)="loadRecordsByDate(2, '2024-11-27', 0, 10)">Botão</button>
-<button (click)="loadRecordsByWorkItemID(2, 4, 0, 10)">Botão</button>
+<div class="container">
+    <form [formGroup]="filterForm" class="filter-form">
+      <div class="form-group">
+        <label for="date">Data:</label>
+        <input type="date" id="date" formControlName="date" />
+        <button type="button" (click)="loadRecordsByDate()">Buscar por Data</button>
+      </div>
+  
+      <div class="form-group">
+        <label for="workItemId">ID da Task:</label>
+        <input type="number" id="workItemId" formControlName="workItemId" />
+        <button type="button" (click)="loadRecordsByWorkItemID()">Buscar por ID da Task</button>
+      </div>
+    </form>
+  
+    <table class="records-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Data de Início</th>
+          <th>Hora de Início</th>
+          <th>Tempo Registrado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of activityRecords">
+          <td>{{ record.id }}</td>
+          <td>{{ record.title }}</td>
+          <td>{{ record.startTime | date: 'dd/MM/yyyy':'UTC' }}</td>
+          <td>{{ record.startTime | date: 'HH:mm:ss':'UTC' }}</td>
+          <td>{{ record.currentTrackedTime }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
