@@ -7,7 +7,8 @@ export const routes: Routes = [
         path: 'activity-tracker',
         loadChildren: () => import('./components/time-tracker/time-tracker.module').then(m => m.TimeTrackerModule)
     },
-    { path:  'reports',
+    {
+      path: 'reports',
       loadChildren: () => import('./components/reports/reports.module').then(m => m.ReportsModule)
     }
 ];
