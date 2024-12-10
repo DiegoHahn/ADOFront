@@ -1,31 +1,58 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivityRecord } from '../../ActivityRecord';
 import { ActivityRecordService } from '../activity-record.service';
+import { PersonalDataService } from '../../time-tracker/personal-data.service';
+import { UserInformation } from '../../time-tracker/user-information';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-activity',
   templateUrl: './user-activity.component.html',
   styleUrls: ['./user-activity.component.css']
 })
-export class UserActivityComponent{
+export class UserActivityComponent implements OnInit {
   activityRecords: ActivityRecord[] = [];
   totalElements: number | undefined;
+  userId: string | null = null;
+  isLoadingUser: boolean = true;
   filterForm: FormGroup;
   readonly DEFAULT_PAGE_SIZE = 11;
   totalTrackedTime: string = '00:00:00';
+  
 
   constructor(
     private activityRecordService: ActivityRecordService,
-    private fb: FormBuilder
+    private personalDataService: PersonalDataService,
+    private fb: FormBuilder,
+    private router: Router,
   ) {
     this.filterForm = this.fb.group({
-      userId: [2],
+      userId: [null, Validators.required],
       date: ['', Validators.required],
       workItemId: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       pageIndex: [0],
       pageSize: [10]
     });
+  }
+  ngOnInit(): void {
+    const email = localStorage.getItem('email');
+    if (email) {
+      this.personalDataService.getUserInformation(email).subscribe(
+        (user: UserInformation) => {
+          this.userId = user.userId;
+          this.filterForm.patchValue({ userId: this.userId });
+          this.isLoadingUser = false;
+        },
+        (error) => {
+          console.error('Erro ao obter o usuário:', error);
+          this.isLoadingUser = false;
+        }
+      );
+    } else {
+      this.isLoadingUser = false;
+      this.router.navigate(['activity-tracker']);
+    }
   }
 
   //retorna as linhas vazias
