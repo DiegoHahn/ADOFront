@@ -1,36 +1,83 @@
 <div class="container">
+  <div class="filter-box">
+    <span class="filter-title">Filtrar </span>
     <form [formGroup]="filterForm" class="filter-form">
       <div class="form-group">
         <label for="date">Data:</label>
         <input type="date" id="date" formControlName="date" />
-        <button type="button" (click)="loadRecordsByDate()">Buscar por Data</button>
+        <button 
+          type="button" 
+          class="search-button" 
+          (click)="loadRecordsByDate()"
+          [disabled]="isDateSearchDisabled()">
+          <img src="assets/img/search.png" alt="Pesquisar" class="search-icon" />
+        </button>
       </div>
-  
+      
       <div class="form-group">
         <label for="workItemId">ID da Task:</label>
-        <input type="number" id="workItemId" formControlName="workItemId" />
-        <button type="button" (click)="loadRecordsByWorkItemID()">Buscar por ID da Task</button>
+        <input type="text" id="workItemId" formControlName="workItemId" />
+        <button 
+          type="button" 
+          class="search-button" 
+          (click)="loadRecordsByWorkItemID()"
+          [disabled]="isWorkItemSearchDisabled()">
+          <img src="assets/img/search.png" alt="Pesquisar" class="search-icon" />
+        </button>
       </div>
     </form>
-  
-    <table class="records-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Título</th>
-          <th>Data de Início</th>
-          <th>Hora de Início</th>
-          <th>Tempo Registrado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let record of activityRecords">
-          <td>{{ record.id }}</td>
-          <td>{{ record.title }}</td>
-          <td>{{ record.startTime | date: 'dd/MM/yyyy':'UTC' }}</td>
-          <td>{{ record.startTime | date: 'HH:mm:ss':'UTC' }}</td>
-          <td>{{ record.currentTrackedTime }}</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
+
+  <!-- <table class="records-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Data de Início</th>
+        <th>Hora de Início</th>
+        <th>Tempo Registrado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of activityRecords">
+        <td>{{ record.workItemId }}</td>
+        <td class="title-column" [title]="record.title">{{ record.title }}</td>
+        <td>{{ record.startTime | date: 'dd/MM/yyyy':'UTC' }}</td>
+        <td>{{ record.startTime | date: 'HH:mm:ss':'UTC' }}</td>
+        <td>{{ record.currentTrackedTime }}</td>
+      </tr>
+    </tbody>
+  </table> -->
+
+  <table class="records-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Data de Início</th>
+        <th>Hora de Início</th>
+        <th>Tempo Registrado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of displayRows">
+        <td>{{ record.workItemId || '' }}</td>
+        <td class="title-column" [title]="record.title">{{ record.title || '' }}</td>
+        <td>
+          {{ record.startTime ? (record.startTime | date: 'dd/MM/yyyy':'UTC') : '' }}
+        </td>
+        <td>
+          {{ record.startTime ? (record.startTime | date: 'HH:mm:ss':'UTC') : '' }}
+        </td>
+        <td>{{ record.currentTrackedTime || '' }}</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="4">Total:</td>
+        <td>{{ totalTrackedTime }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+  
+  
+  
