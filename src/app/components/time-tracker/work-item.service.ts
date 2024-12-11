@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
+import { CurrentTrackedTime } from '../CurrentTrackedTime';
 import { TargetWorkItem } from './target-workItem';
 
 @Injectable({
@@ -17,11 +18,10 @@ export class WorkItemService {
     return this.http.post<TargetWorkItem[]>(`${this.apiUrl}/userstory`, body);
   }
 
-  //TODO: ARRUMAR A TIPAGEM
-  saveWorkItem(workItem: any): Observable<any> { 
-    return this.http.post(this.activityRecordUrl, workItem, { responseType: 'text' }).pipe(
+  saveRecord(record: CurrentTrackedTime): Observable<CurrentTrackedTime> { 
+    return this.http.post(this.activityRecordUrl, record, { responseType: 'text' }).pipe(
       map(response => {
-        return response || {};
+        return JSON.parse(response) as CurrentTrackedTime || null;
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('Erro ao salvar o item de trabalho:', error);

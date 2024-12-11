@@ -54,7 +54,7 @@ export class ControlButtonsComponent {
       this.isTimerRunning = false;
     }
     this.form.get('board')?.enable({ emitEvent: false });
-    this.workItemService.saveWorkItem(this.form.value).pipe(
+    this.workItemService.saveRecord(this.form.value).pipe(
       tap(() => {
         this.statusChanged.emit({ type: 'success', message: 'Registro salvo com sucesso!' });
         setTimeout(() => (this.resetForm()), 2000)
