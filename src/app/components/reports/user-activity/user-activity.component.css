@@ -121,3 +121,26 @@ input[type="text"] {
     font-weight: bold;
     background-color: #e6e6e6;
 }
+
+.table-container {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.records-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.records-table thead tr {
+    position: sticky;
+    top: 0;
+    background-color: #f2f2f2;
+}
+
+.records-table tbody .total-row {
+    position: sticky;
+    bottom: 0;
+    background-color: #e6e6e6;
+}

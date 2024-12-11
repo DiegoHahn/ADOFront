@@ -35,6 +35,7 @@ export class UserActivityComponent implements OnInit {
       pageSize: [10]
     });
   }
+  
   ngOnInit(): void {
     const email = localStorage.getItem('email');
     if (email) {
@@ -55,7 +56,6 @@ export class UserActivityComponent implements OnInit {
     }
   }
 
-  //retorna as linhas vazias
   get emptyRows(): any[] {
     return Array(this.DEFAULT_PAGE_SIZE).fill({
       workItemId: '',
@@ -65,10 +65,9 @@ export class UserActivityComponent implements OnInit {
     });
   }
 
-  //retorna as linhas preenchidas mais as linhas vazias
   get displayRows(): any[] {
     const dataRows = this.activityRecords;
-    const totalRowCount = this.DEFAULT_PAGE_SIZE - 1;
+    const totalRowCount = this.activityRecords.length >= this.DEFAULT_PAGE_SIZE ? this.activityRecords.length : this.DEFAULT_PAGE_SIZE;
     const emptyRowCount = totalRowCount - dataRows.length;
     const emptyRows = Array(emptyRowCount > 0 ? emptyRowCount : 0).fill({
       workItemId: '',
@@ -80,27 +79,25 @@ export class UserActivityComponent implements OnInit {
   }
 
   loadRecordsByDate() {
-    if (this.filterForm.get('date')?.valid) {
-      const { userId, date, pageIndex, pageSize } = this.filterForm.value;
-      this.activityRecordService.getActivitiesRecordsByDate(userId, date, pageIndex, pageSize)
-        .subscribe(response => {
-          this.activityRecords = response.content;
-          this.totalElements = response.totalElements;
+    if (this.filterForm.get('date')?.valid && this.userId !== null) {
+      const { userId, date } = this.filterForm.value;
+      this.activityRecordService.getActivitiesRecordsByDate(userId, date)
+        .subscribe(records => {
+          this.activityRecords = records;
           this.resetDateField();
           this.calculateTotalTrackedTime();
         });
     }
   }
-
+  
   loadRecordsByWorkItemID() {
-    if (this.filterForm.get('workItemId')?.valid) {
-      const { userId, workItemId, pageIndex, pageSize } = this.filterForm.value;
-      this.activityRecordService.getActivitiesRecordsByWorkItemID(userId, workItemId, pageIndex, pageSize)
-        .subscribe(response => {
-          this.activityRecords = response.content;
-          this.totalElements = response.totalElements;
+    if (this.filterForm.get('workItemId')?.valid && this.userId !== null) {
+      const { userId, workItemId } = this.filterForm.value;
+      this.activityRecordService.getActivitiesRecordsByWorkItemID(userId, workItemId)
+        .subscribe(records => {
+          this.activityRecords = records;
           this.resetWorkItemField();
-          this.calculateTotalTrackedTime()
+          this.calculateTotalTrackedTime();
         });
     }
   }
@@ -137,7 +134,6 @@ export class UserActivityComponent implements OnInit {
       return total;
     }, 0);
 
-    // Converter total de segundos para HH:mm:ss
     const hours = Math.floor(totalSeconds / 3600);
     totalSeconds %= 3600;
     const minutes = Math.floor(totalSeconds / 60);
@@ -146,7 +142,6 @@ export class UserActivityComponent implements OnInit {
     this.totalTrackedTime = `${this.padWithZero(hours)}:${this.padWithZero(minutes)}:${this.padWithZero(seconds)}`;
   }
 
-  // Método auxiliar para adicionar zero à esquerda
   padWithZero(num: number): string {
     return num.toString().padStart(2, '0');
   }

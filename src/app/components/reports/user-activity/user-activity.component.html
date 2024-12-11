@@ -27,34 +27,36 @@
       </div>
     </form>
   </div>
-  <table class="records-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Título</th>
-        <th>Data de Início</th>
-        <th>Hora de Início</th>
-        <th>Tempo Registrado</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let record of displayRows">
-        <td>{{ record.workItemId || '' }}</td>
-        <td class="title-column" [title]="record.title">{{ record.title || '' }}</td>
-        <td>
-          {{ record.startTime ? (record.startTime | date: 'dd/MM/yyyy':'UTC') : '' }}
-        </td>
-        <td>
-          {{ record.startTime ? (record.startTime | date: 'HH:mm:ss':'UTC') : '' }}
-        </td>
-        <td>{{ record.currentTrackedTime || '' }}</td>
-      </tr>
-      <tr class="total-row">
-        <td colspan="4">Total:</td>
-        <td>{{ totalTrackedTime }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-container">
+    <table class="records-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Data de Início</th>
+          <th>Hora de Início</th>
+          <th>Tempo Registrado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of displayRows">
+          <td>{{ record.workItemId || '' }}</td>
+          <td class="title-column" [title]="record.title">{{ record.title || '' }}</td>
+          <td>
+            {{ record.startTime ? (record.startTime | date: 'dd/MM/yyyy':'UTC-3') : '' }}
+          </td>
+          <td>
+            {{ record.startTime ? (record.startTime | date: 'HH:mm:ss':'UTC-3') : '' }}
+          </td>
+          <td>{{ record.currentTrackedTime || '' }}</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="4">Total:</td>
+          <td>{{ totalTrackedTime }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
   
   
