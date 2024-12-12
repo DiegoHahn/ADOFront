@@ -30,9 +30,7 @@ export class UserActivityComponent implements OnInit {
     this.filterForm = this.fb.group({
       userId: [null, Validators.required],
       date: ['', Validators.required],
-      workItemId: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      pageIndex: [0],
-      pageSize: [10]
+      workItemId: ['', [Validators.required, Validators.pattern('^[0-9]*$')]]
     });
   }
   
