@@ -24,21 +24,21 @@ export class ControlButtonsComponent {
   }
 
   get isStartIncomplete(): boolean {
-    return !this.form.get('board')?.value == null ||
-           !this.form.get('userStoryId')?.value == null ||
-           !this.form.get('task')?.value == null ||
+    return !this.form.get('board')?.value ||
+           !this.form.get('userStoryId')?.value ||
+           !this.form.get('task')?.value ||
            !this.form.get('originalEstimate')?.value == null ||
            !this.form.get('remainingWork')?.value == null;
   }
 
   get isStopIncomplete(): boolean {
-    return !this.form.get('board')?.value == null ||
-           !this.form.get('userStoryId')?.value == null ||
-           !this.form.get('task')?.value == null ||
+    return !this.form.get('board')?.value ||
+           !this.form.get('userStoryId')?.value ||
+           !this.form.get('task')?.value ||
            !this.form.get('originalEstimate')?.value == null ||
            !this.form.get('remainingWork')?.value == null ||
-           !this.form.get('startTime')?.value == null ||
-           !this.form.get('currentTrackedTime')?.value== null;
+           !this.form.get('startTime')?.value ||
+           !this.form.get('currentTrackedTime')?.value;
   }
 
   start() {

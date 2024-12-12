@@ -119,3 +119,21 @@ app-control-buttons {
   height: 20px;
   cursor: pointer;
 }
+
+.navigation-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nav-button {
+  padding: 5px 10px;
+  background-color: #b7c6d6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  background-color: #587799;
+}
