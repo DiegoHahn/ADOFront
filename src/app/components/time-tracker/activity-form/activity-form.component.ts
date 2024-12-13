@@ -45,6 +45,9 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
     this.form.get('board')?.disable({ emitEvent: false });
     this.setupTimerSubscriptions();
     this.loadUserInformationFromDatabase(email || '');
+    this.form.get('concluded')?.valueChanges.subscribe(() => {
+      this.onConcludedChange();
+    });
 
     this.timerService.resetTimer();
     this.form.reset({
@@ -99,23 +102,32 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
   }
 
   onUserStoryChange() {
-    const userStoryId = this.form.get('userStoryId')?.value;
-    const userId = this.form.get('userId')?.value;
-    const board = this.form.get('board')?.value;
-
     this.errorMessage = null;
     this.workItems = [];
     this.form.get('task')?.reset();
     this.form.get('originalEstimate')?.reset();
     this.form.get('remainingWork')?.reset();
+  
+    this.attemptLoadWorkItems();
+  }
 
+  onConcludedChange() {
+    this.attemptLoadWorkItems();
+  }
+  
+  private attemptLoadWorkItems() {
+    const userStoryId = this.form.get('userStoryId')?.value;
+    const userId = this.form.get('userId')?.value;
+    const board = this.form.get('board')?.value;
+    const concluded = this.form.get('concluded')?.value;
+  
     if (userStoryId && userId && board) {
-      this.loadWorkItems(userStoryId, userId, board);
+      this.loadWorkItems(userStoryId, userId, board, concluded);
     }
   }
 
-  private loadWorkItems(userStoryId: string, userId: string, board: string) {
-    this.workItemService.getWorkItemsForUserStory(userStoryId, userId, board).pipe(
+  private loadWorkItems(userStoryId: string, userId: string, board: string, concluded: boolean) {
+    this.workItemService.getWorkItemsForUserStory(userStoryId, userId, board, concluded).pipe(
       tap((items: TargetWorkItem[]) => {
         this.workItems = items;
         if (this.workItems.length > 0) {
