@@ -100,13 +100,13 @@ export class UserActivityComponent implements OnInit {
     }
   }
 
-  private resetDateField() {
+  public resetDateField() {
     this.filterForm.patchValue({
       date: ''
     });
   }
 
-  private resetWorkItemField() {
+  public resetWorkItemField() {
     this.filterForm.patchValue({
       workItemId: ''
     });
