@@ -24,6 +24,10 @@
           <label for="concluded">Apenas tasks em aberto</label>
         </div>
       </div>
+    <div *ngIf="isLoading" class="loader">
+      <div class="spinner"></div>
+    </div>
+
     </div>
 
     <div class="form-group">
@@ -34,7 +38,6 @@
         </option>
       </select>
     </div>
-
     <div class="form-group time-group">
       <div class="time-box">
         <label for="original-estimate">Original Estimate:</label>

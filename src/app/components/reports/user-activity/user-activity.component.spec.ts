@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { PersonalDataService } from '../../time-tracker/personal-data.service';
 import { ActivityRecordService } from '../activity-record.service';
 import { of, throwError } from 'rxjs';
+import { UserInformation } from '../../time-tracker/user-information';
+import { ActivityRecord } from '../../ActivityRecord';
 
 describe('UserActivityComponent', () => {
   let component: UserActivityComponent;
@@ -197,7 +199,49 @@ describe('UserActivityComponent', () => {
       expect(component.resetDateField).toHaveBeenCalled();
       expect(component.calculateTotalTrackedTime).toHaveBeenCalled();
     });
+
+    it('should handle error when loading records by date fails', () => {
+      const mockError = new Error('Test error');
+      (window.localStorage.getItem as jest.Mock).mockReturnValue('user@example.com');
+      mockPersonalDataService.getUserInformation.mockReturnValue(of({
+        userId: '123',
+        email: 'user@example.com',
+        hasToken: true,
+        board: 'default-board',
+      }));
+      component.ngOnInit();
+      component.filterForm.get('date')?.setValue('2023-10-05');
+      mockActivityRecordService.getActivitiesRecordsByDate.mockReturnValue(throwError(() => mockError));
+      const consoleSpy = jest.spyOn(console, 'error');
+      jest.spyOn(component, 'calculateTotalTrackedTime');
+    
+      component.loadRecordsByDate();
+    
+      expect(mockActivityRecordService.getActivitiesRecordsByDate).toHaveBeenCalledWith('123', '2023-10-05');
+      expect(consoleSpy).toHaveBeenCalledWith('Erro ao carregar registros por data:', mockError);
+      expect(component.errorMessage).toEqual('Erro ao carregar registros. Tente novamente.');
+      expect(component.activityRecords).toEqual([]);
+      expect(component.calculateTotalTrackedTime).not.toHaveBeenCalled();
+    
+      consoleSpy.mockRestore();
+    });
   
+    it('should set errorMessage to "Nenhum registro encontrado" when no records are returned', () => {
+      component.userId = '123';
+      component.filterForm.get('date')?.setValue('2023-10-05');
+      const mockEmptyRecords: ActivityRecord[] = [];
+      mockActivityRecordService.getActivitiesRecordsByDate.mockReturnValue(of(mockEmptyRecords));
+      jest.spyOn(component, 'resetDateField');
+      jest.spyOn(component, 'calculateTotalTrackedTime');
+  
+      component.loadRecordsByDate();
+  
+      expect(component.activityRecords).toEqual(mockEmptyRecords);
+      expect(component.resetDateField).toHaveBeenCalled();
+      expect(component.errorMessage).toEqual('Nenhum registro encontrado');
+      expect(component.calculateTotalTrackedTime).toHaveBeenCalled();
+    });
+
     it('should not load records if date is invalid', () => {
       component.userId = '123';
       component.filterForm.get('date')?.setValue('');
@@ -210,7 +254,7 @@ describe('UserActivityComponent', () => {
 
   describe('loadRecordsByWorkItemID', () => {
     it('should load records by WorkItemID when form is valid', () => {
-      const mockUserInformation = {
+      const mockUserInformation: UserInformation = {
         userId: '123',
         email: 'user@example.com',
         hasToken: true,
@@ -227,12 +271,54 @@ describe('UserActivityComponent', () => {
     
       component.loadRecordsByWorkItemID();
     
-      expect(mockActivityRecordService.getActivitiesRecordsByWorkItemID).toHaveBeenCalledWith('123', '456');
       expect(component.activityRecords).toEqual(mockRecords);
       expect(component.resetWorkItemField).toHaveBeenCalled();
       expect(component.calculateTotalTrackedTime).toHaveBeenCalled();
     });
+
+    it('should handle error when loading records by WorkItemID fails', () => {
+      const mockError = new Error('Test error');
+      const mockUserInformation: UserInformation = {
+        userId: '123',
+        email: 'user@example.com',
+        hasToken: true,
+        board: 'default-board',
+      };
   
+      (window.localStorage.getItem as jest.Mock).mockReturnValue('user@example.com');
+      mockPersonalDataService.getUserInformation.mockReturnValue(of(mockUserInformation));
+      component.ngOnInit();
+      component.filterForm.get('workItemId')?.setValue('456');
+      mockActivityRecordService.getActivitiesRecordsByWorkItemID.mockReturnValue(throwError(() => mockError));
+      const consoleSpy = jest.spyOn(console, 'error');
+      jest.spyOn(component, 'calculateTotalTrackedTime');
+  
+      component.loadRecordsByWorkItemID();
+  
+      expect(mockActivityRecordService.getActivitiesRecordsByWorkItemID).toHaveBeenCalledWith('123', '456');
+      expect(consoleSpy).toHaveBeenCalledWith('Erro ao carregar registros por ID da Task:', mockError);
+      expect(component.errorMessage).toEqual('Erro ao carregar registros. Tente novamente.');
+      expect(component.activityRecords).toEqual([]);
+      expect(component.calculateTotalTrackedTime).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+    
+    it('should set errorMessage to "Nenhum registro encontrado" when no records are returned', () => {
+      component.userId = '123';
+      component.filterForm.get('workItemId')?.setValue('456');
+      const mockEmptyRecords: ActivityRecord[] = [];
+      mockActivityRecordService.getActivitiesRecordsByWorkItemID.mockReturnValue(of(mockEmptyRecords));
+      jest.spyOn(component, 'resetWorkItemField');
+      jest.spyOn(component, 'calculateTotalTrackedTime');
+  
+      component.loadRecordsByWorkItemID();
+  
+      expect(component.activityRecords).toEqual(mockEmptyRecords);
+      expect(component.resetWorkItemField).toHaveBeenCalled();
+      expect(component.errorMessage).toEqual('Nenhum registro encontrado');
+      expect(component.calculateTotalTrackedTime).toHaveBeenCalled();
+    });
+
     it('should not load records if WorkItemID is invalid', () => {
       component.userId = '123';
       component.filterForm.get('workItemId')?.setValue('');

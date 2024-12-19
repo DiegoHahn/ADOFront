@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ActivityRecordService } from './activity-record.service';
 import { DatePipe } from '@angular/common';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { ActivityRecord } from '../ActivityRecord';
+import { ActivityRecordService } from './activity-record.service';
 
 describe('ActivityRecordService', () => {
     let service: ActivityRecordService;
@@ -27,36 +27,40 @@ describe('ActivityRecordService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should get activities records by date', () => {
-        const userId = 1;
-        const date = '2023-01-01';
-        const mockResponse: ActivityRecord[] = [];
-        const formattedDate = datePipe.transform(date, 'yyyy-MM-dd');
+    describe('getActivitiesRecordsByDate', () => {
+        it('should get activities records by date', () => {
+            const userId = 1;
+            const date = '2023-01-01';
+            const mockResponse: ActivityRecord[] = [];
+            const formattedDate = datePipe.transform(date, 'yyyy-MM-dd');
 
-        service.getActivitiesRecordsByDate(userId, date).subscribe(response => {
-            expect(response).toEqual(mockResponse);
+            service.getActivitiesRecordsByDate(userId, date).subscribe(response => {
+                expect(response).toEqual(mockResponse);
+            });
+
+            const req = httpMock.expectOne(
+                `http://localhost:8080/activityrecord/byDate?userId=${userId}&date=${formattedDate}`
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockResponse);
         });
-
-        const req = httpMock.expectOne(
-            `http://localhost:8080/activityrecord/byDate?userId=${userId}&date=${formattedDate}`
-        );
-        expect(req.request.method).toBe('GET');
-        req.flush(mockResponse);
     });
 
-    it('should get activities records by work item ID', () => {
-        const userId = 1;
-        const workItemId = 100;
-        const mockResponse: ActivityRecord[] = [];
+    describe('getActivitiesRecordsByWorkItemID', () => {
+        it('should get activities records by work item ID', () => {
+            const userId = 1;
+            const workItemId = 100;
+            const mockResponse: ActivityRecord[] = [];
 
-        service.getActivitiesRecordsByWorkItemID(userId, workItemId).subscribe(response => {
-            expect(response).toEqual(mockResponse);
+            service.getActivitiesRecordsByWorkItemID(userId, workItemId).subscribe(response => {
+                expect(response).toEqual(mockResponse);
+            });
+
+            const req = httpMock.expectOne(
+                `http://localhost:8080/activityrecord/byWorkItemID?userId=${userId}&workItemID=${workItemId}`
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockResponse);
         });
-
-        const req = httpMock.expectOne(
-            `http://localhost:8080/activityrecord/byWorkItemID?userId=${userId}&workItemID=${workItemId}`
-        );
-        expect(req.request.method).toBe('GET');
-        req.flush(mockResponse);
     });
 });

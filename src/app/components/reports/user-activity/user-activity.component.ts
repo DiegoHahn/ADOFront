@@ -5,6 +5,7 @@ import { ActivityRecordService } from '../activity-record.service';
 import { PersonalDataService } from '../../time-tracker/personal-data.service';
 import { UserInformation } from '../../time-tracker/user-information';
 import { Router } from '@angular/router';
+import { catchError, map, of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-user-activity',
@@ -12,6 +13,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./user-activity.component.css']
 })
 export class UserActivityComponent implements OnInit {
+  errorMessage: string | null = null;
   activityRecords: ActivityRecord[] = [];
   totalElements: number | undefined;
   userId: string | null = null;
@@ -52,6 +54,14 @@ export class UserActivityComponent implements OnInit {
       this.isLoadingUser = false;
       this.router.navigate(['activity-tracker']);
     }
+
+    this.filterForm.get('date')?.valueChanges.subscribe(() => {
+      this.errorMessage = null;
+    });
+  
+    this.filterForm.get('workItemId')?.valueChanges.subscribe(() => {
+      this.errorMessage = null;
+    });
   }
 
   get emptyRows(): any[] {
@@ -77,26 +87,58 @@ export class UserActivityComponent implements OnInit {
   }
 
   loadRecordsByDate() {
-    if (this.filterForm.get('date')?.valid && this.userId !== null) {
+    const dateControl = this.filterForm.get('date');
+    if (dateControl?.valid && this.userId !== null) {
       const { userId, date } = this.filterForm.value;
-      this.activityRecordService.getActivitiesRecordsByDate(userId, date)
-        .subscribe(records => {
+      this.activityRecordService.getActivitiesRecordsByDate(userId, date).pipe(
+        tap(() => {
+          this.errorMessage = null;
+        }),
+        map(records => {
+          return records;
+        }),
+        tap(records => {
           this.activityRecords = records;
           this.resetDateField();
+          if (records.length === 0) {
+            this.errorMessage = 'Nenhum registro encontrado';
+          }
           this.calculateTotalTrackedTime();
-        });
+        }),
+        catchError(error => {
+          console.error('Erro ao carregar registros por data:', error);
+          this.errorMessage = 'Erro ao carregar registros. Tente novamente.';
+          return of([]);
+        })
+      ).subscribe();
     }
   }
-  
+
   loadRecordsByWorkItemID() {
-    if (this.filterForm.get('workItemId')?.valid && this.userId !== null) {
+    const workItemIdControl = this.filterForm.get('workItemId');
+    if (workItemIdControl?.valid && this.userId !== null) {
       const { userId, workItemId } = this.filterForm.value;
-      this.activityRecordService.getActivitiesRecordsByWorkItemID(userId, workItemId)
-        .subscribe(records => {
+      this.activityRecordService.getActivitiesRecordsByWorkItemID(userId, workItemId).pipe(
+        tap(() => {
+          this.errorMessage = null;
+        }),
+        map(records => {
+          return records;
+        }),
+        tap(records => {
           this.activityRecords = records;
           this.resetWorkItemField();
+          if (records.length === 0) {
+            this.errorMessage = 'Nenhum registro encontrado';
+          }
           this.calculateTotalTrackedTime();
-        });
+        }),
+        catchError(error => {
+          console.error('Erro ao carregar registros por ID da Task:', error);
+          this.errorMessage = 'Erro ao carregar registros. Tente novamente.';
+          return of([]);
+        })
+      ).subscribe();
     }
   }
 

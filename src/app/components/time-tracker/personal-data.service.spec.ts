@@ -1,8 +1,7 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { PersonalDataService } from './personal-data.service';
 import { UserInformation } from './user-information';
-import { HttpErrorResponse } from '@angular/common/http';
 
 describe('PersonalDataService', () => {
     let service: PersonalDataService;

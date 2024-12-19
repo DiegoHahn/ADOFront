@@ -25,11 +25,11 @@ import { ActivityRecord } from "../ActivityRecord";
       return this.http.get<ActivityRecord[]>(this.activityRecordUrl + '/byDate', {params})
   }
 
-  getActivitiesRecordsByWorkItemID(userId: number, workItemID: number): Observable<ActivityRecord[]>{
+  getActivitiesRecordsByWorkItemID(userId: number, workItemId: number): Observable<ActivityRecord[]>{
     let params = new HttpParams()
     params = params
       .set('userId', userId)
-      .set('workItemID', workItemID)
+      .set('workItemId', workItemId)
     return this.http.get<ActivityRecord[]>(this.activityRecordUrl + '/byWorkItemID', {params})
   }
 }

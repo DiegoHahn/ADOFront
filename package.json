@@ -40,9 +40,7 @@
     "testPathIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/dist/",
-      "<rootDir>/src/app/components/activity-form/activity-form.component.spec.ts",
-      "<rootDir>/src/app/components/control-buttons/control-buttons.component.spec.ts",
-      "<rootDir>/src/app/components/personal-data/personal-data.component.spec.ts"
+      "<rootDir>/src/app/components/activity-form/activity-form.component.spec.ts"
     ],
     "testMatch": [
       "<rootDir>/src/**/*.spec.ts"

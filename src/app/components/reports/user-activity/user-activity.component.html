@@ -1,4 +1,4 @@
-<div class="container">
+  <div class="container">
   <div class="filter-box">
     <div class="navigation-buttons">
       <button routerLink="/activity-tracker/activity-form" class="nav-button">Início</button>
@@ -7,14 +7,19 @@
     <form [formGroup]="filterForm" class="filter-form">
       <div class="form-group">
         <label for="date">Data:</label>
-        <input type="date" id="date" formControlName="date" />
-        <button 
-          type="button" 
-          class="search-button" 
-          (click)="loadRecordsByDate()"
-          [disabled]="isDateSearchDisabled()">
-          <img src="assets/img/search.png" alt="Pesquisar" class="search-icon" />
-        </button>
+        <div class="input-container">
+          <input type="date" id="date" formControlName="date" />
+          <button 
+            type="button" 
+            class="search-button" 
+            (click)="loadRecordsByDate()"
+            [disabled]="isDateSearchDisabled()">
+            <img src="assets/img/search.png" alt="Pesquisar" class="search-icon" />
+          </button>
+        </div>
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
       </div>
       
       <div class="form-group">
@@ -61,6 +66,3 @@
     </table>
   </div>
 </div>
-  
-  
-  

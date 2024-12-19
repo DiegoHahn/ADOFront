@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { catchError, of, tap, map } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { catchError, of, switchMap, tap, timer } from 'rxjs';
+import { PersonalDataService } from '../personal-data.service';
+import { TargetWorkItem } from '../target-workItem';
 import { TimerService } from '../timer.service';
 import { WorkItemService } from '../work-item.service';
-import { TargetWorkItem } from '../target-workItem';
-import { HttpErrorResponse } from '@angular/common/http';
-import { PersonalDataService } from '../personal-data.service';
 
 @Component({
   selector: 'app-activity-form',
@@ -14,6 +14,7 @@ import { PersonalDataService } from '../personal-data.service';
   styleUrls: ['./activity-form.component.css']
 })
 export class ActivityFormComponent implements OnInit, OnDestroy {
+  isLoading: boolean = false;
   form!: FormGroup;
   workItems: TargetWorkItem[] = [];
   selectedWorkItem: TargetWorkItem | null = null;
@@ -21,7 +22,7 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
   errorMessage: string | null = null;
 
   constructor(
-    private formBuilder: FormBuilder,
+    public formBuilder: FormBuilder,
     private workItemService: WorkItemService,
     public timerService: TimerService,
     private router: Router,
@@ -69,12 +70,17 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
   }
 
   private setupTimerSubscriptions() {
-    this.timerService.startTime$.subscribe(time => {
-      this.form.get('startTime')?.setValue(time);
-    });
-    this.timerService.currentTrackedTime$.subscribe(currentTrackedTime => {
-      this.form.get('currentTrackedTime')?.setValue(currentTrackedTime);
-    });
+    this.timerService.startTime$
+      .pipe(
+        tap(time => this.form.get('startTime')?.setValue(time))
+      )
+      .subscribe();
+  
+    this.timerService.currentTrackedTime$
+      .pipe(
+        tap(currentTrackedTime => this.form.get('currentTrackedTime')?.setValue(currentTrackedTime))
+      )
+      .subscribe();
   }
 
   private loadUserInformationFromDatabase(email: string) {
@@ -125,11 +131,15 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
       this.loadWorkItems(userStoryId, userId, board, concluded);
     }
   }
-
   private loadWorkItems(userStoryId: string, userId: string, board: string, concluded: boolean) {
-    this.workItemService.getWorkItemsForUserStory(userStoryId, userId, board, concluded).pipe(
+    const loader$ = timer(300).pipe(
+      tap(() => (this.isLoading = true))
+    );
+  
+    const workItems$ = this.workItemService.getWorkItemsForUserStory(userStoryId, userId, board, concluded).pipe(
       tap((items: TargetWorkItem[]) => {
         this.workItems = items;
+        this.isLoading = false;
         if (this.workItems.length > 0) {
           this.selectedWorkItem = this.workItems[0];
           this.form.get('task')?.setValue(this.selectedWorkItem);
@@ -145,8 +155,13 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
         this.ngZone.run(() => {
           this.errorMessage = 'Erro ao buscar tasks. Verifique os dados de usuário informados';
         });
+        this.isLoading = false; 
         return of([]);
       })
+    );
+  
+    loader$.pipe(
+      switchMap(() => workItems$)
     ).subscribe();
   }
 
@@ -173,3 +188,4 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
     }
   }
 }
+
