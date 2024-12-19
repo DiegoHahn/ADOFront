@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UserActivityComponent } from './user-activity.component';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PersonalDataService } from '../../time-tracker/personal-data.service';
-import { ActivityRecordService } from '../activity-record.service';
 import { of, throwError } from 'rxjs';
-import { UserInformation } from '../../time-tracker/user-information';
 import { ActivityRecord } from '../../ActivityRecord';
+import { PersonalDataService } from '../../time-tracker/personal-data.service';
+import { UserInformation } from '../../time-tracker/user-information';
+import { ActivityRecordService } from '../activity-record.service';
+import { UserActivityComponent } from './user-activity.component';
 
 describe('UserActivityComponent', () => {
   let component: UserActivityComponent;
@@ -103,18 +103,17 @@ describe('UserActivityComponent', () => {
       const mockError = new Error('Test error');
       (window.localStorage.getItem as jest.Mock).mockReturnValue('user@example.com');
       mockPersonalDataService.getUserInformation.mockReturnValue(throwError(() => mockError));
-      const consoleSpy = jest.spyOn(console, 'error');
-
+  
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  
       component.ngOnInit();
-
-      expect(consoleSpy).toHaveBeenCalledWith('Erro ao obter o usuário:', mockError);
+  
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao obter o usuário:', mockError);
       expect(component.isLoadingUser).toBe(false);
       expect(component.userId).toBeNull();
-
-      consoleSpy.mockRestore();
+  
+      consoleErrorSpy.mockRestore();
     });
-
-    
   });
 
   describe('emptyRows and displayRows', () => {
@@ -176,6 +175,16 @@ describe('UserActivityComponent', () => {
   });
   
   describe('loadRecordsByDate', () => {
+    let consoleErrorSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
+    });
+
     it('should load records by date when form is valid', () => {
       const mockUserInformation = {
         userId: '123',
@@ -212,18 +221,19 @@ describe('UserActivityComponent', () => {
       component.ngOnInit();
       component.filterForm.get('date')?.setValue('2023-10-05');
       mockActivityRecordService.getActivitiesRecordsByDate.mockReturnValue(throwError(() => mockError));
-      const consoleSpy = jest.spyOn(console, 'error');
+  
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       jest.spyOn(component, 'calculateTotalTrackedTime');
-    
+  
       component.loadRecordsByDate();
-    
+  
       expect(mockActivityRecordService.getActivitiesRecordsByDate).toHaveBeenCalledWith('123', '2023-10-05');
-      expect(consoleSpy).toHaveBeenCalledWith('Erro ao carregar registros por data:', mockError);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao carregar registros por data:', mockError);
       expect(component.errorMessage).toEqual('Erro ao carregar registros. Tente novamente.');
       expect(component.activityRecords).toEqual([]);
       expect(component.calculateTotalTrackedTime).not.toHaveBeenCalled();
-    
-      consoleSpy.mockRestore();
+  
+      consoleErrorSpy.mockRestore();
     });
   
     it('should set errorMessage to "Nenhum registro encontrado" when no records are returned', () => {
@@ -290,17 +300,19 @@ describe('UserActivityComponent', () => {
       component.ngOnInit();
       component.filterForm.get('workItemId')?.setValue('456');
       mockActivityRecordService.getActivitiesRecordsByWorkItemID.mockReturnValue(throwError(() => mockError));
-      const consoleSpy = jest.spyOn(console, 'error');
+  
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       jest.spyOn(component, 'calculateTotalTrackedTime');
   
       component.loadRecordsByWorkItemID();
   
       expect(mockActivityRecordService.getActivitiesRecordsByWorkItemID).toHaveBeenCalledWith('123', '456');
-      expect(consoleSpy).toHaveBeenCalledWith('Erro ao carregar registros por ID da Task:', mockError);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao carregar registros por ID da Task:', mockError);
       expect(component.errorMessage).toEqual('Erro ao carregar registros. Tente novamente.');
       expect(component.activityRecords).toEqual([]);
       expect(component.calculateTotalTrackedTime).not.toHaveBeenCalled();
-      consoleSpy.mockRestore();
+  
+      consoleErrorSpy.mockRestore();
     });
     
     it('should set errorMessage to "Nenhum registro encontrado" when no records are returned', () => {

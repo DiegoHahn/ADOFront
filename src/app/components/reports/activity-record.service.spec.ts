@@ -57,7 +57,7 @@ describe('ActivityRecordService', () => {
             });
 
             const req = httpMock.expectOne(
-                `http://localhost:8080/activityrecord/byWorkItemID?userId=${userId}&workItemID=${workItemId}`
+                `http://localhost:8080/activityrecord/byWorkItemID?userId=${userId}&workItemId=${workItemId}`
             );
             expect(req.request.method).toBe('GET');
             req.flush(mockResponse);
