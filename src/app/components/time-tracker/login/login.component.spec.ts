@@ -1,188 +1,159 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { PersonalDataService } from '../personal-data.service';
 import { LoginComponent } from './login.component';
-import { UserInformation } from '../user-information';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let formBuilder: FormBuilder;
-  let mockService: jest.Mocked<PersonalDataService>;
-  let mockRouter: jest.Mocked<Router>;
+  let personalDataServiceMock: any;
+  let routerMock: any;
 
-  beforeEach(waitForAsync(() => {
-    const serviceMock = {
+  beforeEach(() => {
+    personalDataServiceMock = {
       getUserInformation: jest.fn(),
     };
 
-    const routerMock = {
+    routerMock = {
       navigate: jest.fn(),
     };
 
     TestBed.configureTestingModule({
       declarations: [LoginComponent],
-      imports: [
-        ReactiveFormsModule,
-        RouterTestingModule,
-        HttpClientTestingModule
-      ],
+      imports: [ReactiveFormsModule],
       providers: [
-        FormBuilder,
-        { provide: PersonalDataService, useValue: serviceMock },
+        { provide: PersonalDataService, useValue: personalDataServiceMock },
         { provide: Router, useValue: routerMock },
       ],
-    })
-    .compileComponents()
-    .then(() => {
-      fixture = TestBed.createComponent(LoginComponent);
-      component = fixture.componentInstance;
-      formBuilder = TestBed.inject(FormBuilder);
-      mockService = TestBed.inject(PersonalDataService) as jest.Mocked<PersonalDataService>;
-      mockRouter = TestBed.inject(Router) as jest.Mocked<Router>;
-      fixture.detectChanges();
-    });
-  }));
+    }).compileComponents();
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    fixture = TestBed.createComponent(LoginComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   describe('ngOnInit', () => {
-    it('should initialize the login form with email control', () => {
-      const expectedFormGroup = formBuilder.group({
-        email: ['', [Validators.required, Validators.email]]
-      });
-
-      component.ngOnInit();
-
-      expect(component.loginForm.value).toEqual(expectedFormGroup.value);
+    it('should initialize the form with the email field empty', () => {
+      expect(component.loginForm.get('email')?.value).toBe('');
     });
 
-    it('should subscribe to email value changes and call updateEmailErrors', fakeAsync(() => {
-      const updateErrorsSpy = jest.spyOn(component, 'updateEmailErrors');
+    it('should set up the listener for the email field', () => {
+      const setupEmailListenerSpy = jest.spyOn(component, 'setupEmailListener');
       component.ngOnInit();
-      const emailControl = component.loginForm.get('email');
-      emailControl?.setValue('test@example.com');
-      tick(1000);
-
-      expect(updateErrorsSpy).toHaveBeenCalled();
-    }));
+      expect(setupEmailListenerSpy).toHaveBeenCalled();
+    });
   });
 
-  describe('updateEmailErrors', () => {
-    it('should populate emailErrors with required error message when email is empty', () => {
-      component.loginForm.setValue({ email: '' });
+  describe('setupEmailListener', () => {
+    it('should display an error message when the email is invalid and the control is dirty', fakeAsync(() => {
+      const emailControl = component.loginForm.get('email');
+      emailControl?.setValue('invalid-email');
+      emailControl?.markAsDirty();
+      emailControl?.updateValueAndValidity();
+      tick(500);
+  
+      expect(component.displayError).toBeTruthy();
+      expect(component.errorMessage).toBe('Email inválido');
+    }));
 
-      component.updateEmailErrors();
+    it('should not display an error message when the email is invalid but the control is neither dirty nor touched', fakeAsync(() => {
+      const emailControl = component.loginForm.get('email');
+      emailControl?.setValue('invalid-email');
 
-      expect(component.emailErrors).toContain('Email é obrigatório.');
-      expect(component.emailErrors).not.toContain('Por favor, insira um email válido.');
+      emailControl?.updateValueAndValidity();
+      tick(500);
+  
+      expect(component.displayError).toBeFalsy();
+      expect(component.errorMessage).toBe('');
+    }));
+
+    it('should clear the error message when the email is valid', () => {
+      component.loginForm.get('email')?.setValue('valid@example.com');
+      fixture.detectChanges();
+
+      expect(component.displayError).toBeFalsy();
+      expect(component.errorMessage).toBe('');
     });
 
-    it('should populate emailErrors with invalid email message when email format is incorrect', () => {
-      component.loginForm.setValue({ email: 'invalid-email' });
+    it('should update email errors if the form is invalid', () => {
+      const updateEmailErrorsSpy = jest.spyOn(component, 'updateEmailErrors');
+      component.loginForm.get('email')?.setValue('');
+      const navigateSpy = jest.spyOn(routerMock, 'navigate');
+    
+      component.onSubmit();
+    
+      expect(updateEmailErrorsSpy).toHaveBeenCalled();
+      expect(component.isLoading).toBe(false);
+      expect(routerMock.navigate).not.toHaveBeenCalled();
+    });
+  });
 
-      component.updateEmailErrors();
+  describe('getEmailErrorMessage', () => {
+    it('should return "Email é obrigatório" when the field is empty', () => {
+      const control = component.loginForm.get('email');
+      control?.setErrors({ required: true });
 
-      expect(component.emailErrors).toContain('Por favor, insira um email válido.');
-      expect(component.emailErrors).not.toContain('Email é obrigatório.');
+      expect(component.getEmailErrorMessage(control!)).toBe('Email é obrigatório');
     });
 
-    it('should have no emailErrors when email is valid', () => {
-      component.loginForm.setValue({ email: 'valid@example.com' });
+    it('should return "Email inválido" when the field is invalid', () => {
+      const control = component.loginForm.get('email');
+      control?.setErrors({ email: true });
 
-      component.updateEmailErrors();
+      expect(component.getEmailErrorMessage(control!)).toBe('Email inválido');
+    });
 
-      expect(component.emailErrors.length).toBe(0);
+    it('should return an empty string when there are no errors', () => {
+      const control = component.loginForm.get('email');
+      control?.setErrors(null);
+  
+      expect(component.getEmailErrorMessage(control!)).toBe('');
     });
   });
 
   describe('onSubmit', () => {
-    beforeEach(() => {
-      mockService.getUserInformation.mockClear();
-      mockRouter.navigate.mockClear();
-      jest.spyOn(Storage.prototype, 'setItem').mockClear();
-    });
+    it('should search user information when the Email is valid', () => {
+      personalDataServiceMock.getUserInformation.mockReturnValue(of({ id: 1, email: 'test@example.com' }));
 
-    it('should call onSubmit and navigate on successful login', () => {
-      const navigateSpy = mockRouter.navigate;
-      const mockResponse: UserInformation = {
-        hasToken: true,
-        email: 'test@example.com',
-        board: 'default-board',
-        userId: '123'
-      };
-      mockService.getUserInformation.mockReturnValue(of(mockResponse));
-      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
-      component.loginForm.setValue({ email: 'test@example.com' });
-
+      component.loginForm.get('email')?.setValue('test@example.com');
       component.onSubmit();
 
-      expect(mockService.getUserInformation).toHaveBeenCalledWith('test@example.com');
-      expect(setItemSpy).toHaveBeenCalledWith('email', 'test@example.com');
-      expect(setItemSpy).toHaveBeenCalledWith('userInformation', JSON.stringify(mockResponse));
-      expect(navigateSpy).toHaveBeenCalledWith(['/activity-tracker', 'activity-form']);
+      expect(personalDataServiceMock.getUserInformation).toHaveBeenCalledWith('test@example.com');
+      expect(routerMock.navigate).toHaveBeenCalledWith(['/activity-tracker', 'activity-form']);
     });
 
-    it('should handle 404 error on onSubmit and navigate to personal-data', () => {
-      const navigateSpy = mockRouter.navigate;
-      mockService.getUserInformation.mockImplementation(() => throwError(() => ({
-        status: 404,
-        statusText: 'Not Found',
-        error: 'User not found',
-        url: 'http://localhost:8080/userInformation',
-      })));
-      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
-      component.loginForm.setValue({ email: 'nonexistent@example.com' });
+    it('should redirect to the personal data page if the Email dos not exist', () => {
+      personalDataServiceMock.getUserInformation.mockReturnValue(throwError({ status: 404 }));
 
+      component.loginForm.get('email')?.setValue('nonexistent@example.com');
       component.onSubmit();
 
-      expect(mockService.getUserInformation).toHaveBeenCalledWith('nonexistent@example.com');
-      expect(setItemSpy).toHaveBeenCalledWith('email', 'nonexistent@example.com');
-      expect(navigateSpy).toHaveBeenCalledWith(['/activity-tracker', '/personal-data']);
+      expect(routerMock.navigate).toHaveBeenCalledWith(['/activity-tracker', '/personal-data']);
     });
 
-    it('should handle unexpected errors on onSubmit', () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      mockService.getUserInformation.mockReturnValue(throwError(() => ({
-        status: 500,
-        statusText: 'Internal Server Error',
-        error: 'Server error',
-        url: 'http://localhost:8080/userInformation',
-      })));
-      component.loginForm.setValue({ email: 'error@example.com' });
+    it('should display an error when fetching user information results in an unexpected error', () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      personalDataServiceMock.getUserInformation.mockReturnValue(throwError({ status: 500 }));
 
+      component.loginForm.get('email')?.setValue('test@example.com');
       component.onSubmit();
 
-      expect(mockService.getUserInformation).toHaveBeenCalledWith('error@example.com');
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao buscar informações do usuário:', {
-        status: 500,
-        statusText: 'Internal Server Error',
-        error: 'Server error',
-        url: 'http://localhost:8080/userInformation',
-      });
-      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao buscar informações do usuário:', expect.anything());
       consoleErrorSpy.mockRestore();
     });
+  });
 
-    it('should not call PersonalDataService or navigate if form is invalid', () => {
-      const getUserInfoSpy = mockService.getUserInformation;
-      const navigateSpy = mockRouter.navigate;
-      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
-      component.loginForm.setValue({ email: '' });
-      const updateErrorsSpy = jest.spyOn(component, 'updateEmailErrors');
+  describe('updateEmailErrors', () => {
+    it('should display an error message if the email field is invalid', () => {
+      const emailControl = component.loginForm.get('email');
+      emailControl?.setErrors({ email: true });
 
-      component.onSubmit();
+      component.updateEmailErrors();
 
-      expect(updateErrorsSpy).toHaveBeenCalled();
-      expect(getUserInfoSpy).not.toHaveBeenCalled();
-      expect(navigateSpy).not.toHaveBeenCalled();
-      expect(setItemSpy).not.toHaveBeenCalled();
+      expect(component.displayError).toBeTruthy();
+      expect(component.errorMessage).toBe('Email inválido');
     });
   });
 });

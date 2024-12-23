@@ -7,7 +7,7 @@ import { ActivityRecord } from "../ActivityRecord";
 
 @Injectable()
   export class ActivityRecordService {
-  private activityRecordUrl = 'http://localhost:8080/activityrecord';
+  private activityRecordUrl = 'http://localhost:8080/activityRecord';
 
   constructor(
     private http: HttpClient,
@@ -25,11 +25,11 @@ import { ActivityRecord } from "../ActivityRecord";
       return this.http.get<ActivityRecord[]>(this.activityRecordUrl + '/byDate', {params})
   }
 
-  getActivitiesRecordsByWorkItemID(userId: number, workItemId: number): Observable<ActivityRecord[]>{
+  getActivitiesRecordsByWorkItemId(userId: number, workItemId: number): Observable<ActivityRecord[]>{
     let params = new HttpParams()
     params = params
       .set('userId', userId)
       .set('workItemId', workItemId)
-    return this.http.get<ActivityRecord[]>(this.activityRecordUrl + '/byWorkItemID', {params})
+    return this.http.get<ActivityRecord[]>(this.activityRecordUrl + '/byWorkItemId', {params})
   }
 }

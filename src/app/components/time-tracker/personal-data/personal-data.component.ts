@@ -1,7 +1,7 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { catchError, debounceTime, of, tap } from 'rxjs';
+import { catchError, debounceTime, map, of, tap } from 'rxjs';
 import { PersonalDataService } from '../personal-data.service';
 
 @Component({
@@ -31,9 +31,8 @@ export class PersonalDataComponent implements OnInit {
     });
 
     Object.keys(this.form.controls).forEach(key => {
-      this.form.get(key)?.valueChanges.pipe(
-        debounceTime(1000)
-      ).subscribe(() => {
+      this.form.get(key)?.valueChanges.subscribe(() => {
+        debounceTime(1000),
         this.updateErrors(key);
       });
     });

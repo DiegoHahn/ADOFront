@@ -10,10 +10,11 @@
                 id="email"
                 formControlName="email"
                 placeholder="Digite seu e-mail"
-                (blur)="updateEmailErrors()"
             >
             </div>
-            <div *ngFor="let error of emailErrors" class="error-message">{{ error }}</div>
+            <div *ngIf="displayError" class="error-message">
+                {{ errorMessage }}
+              </div>
         </div>
         <button type="submit" [disabled]="loginForm.invalid" class="login-button">Entrar</button>
         </form>

@@ -41,11 +41,7 @@ describe('PersonalDataComponent', () => {
     routerMock = TestBed.inject(Router) as jest.Mocked<Router>;
     ngZone = TestBed.inject(NgZone);
 
-  
-    jest.spyOn(component, 'updateErrors');
-
     fixture.detectChanges();
-   
   });
 
   it('should create', () => {
@@ -58,14 +54,15 @@ describe('PersonalDataComponent', () => {
       expect(component.form.get('email')?.value).toBe('test@example.com');
     });
 
-    // it('should subscribe to form value changes and call updateErrors', fakeAsync(() => {
-    //     const emailControl = component.form.get('email');
-    //     emailControl?.setValue('new@example.com');
-    //     expect(emailControl?.value).toBe('new@example.com');
-    //     tick(1001);
+    it('should subscribe to form value changes and call updateErrors', fakeAsync(() => {
+      jest.spyOn(component, 'updateErrors');
+      const emailControl = component.form.get('email'); 
+      emailControl?.setValue('new@example.com');
 
-    //     expect(component.updateErrors).toHaveBeenCalled();
-    //   }));
+      tick(1001);
+
+      expect(component.updateErrors).toHaveBeenCalled();
+    }));
 
     it('should fetch user information', () => {
       const getUserInfoSpy = personalDataServiceMock.getUserInformation;

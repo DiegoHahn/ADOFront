@@ -1,8 +1,9 @@
-import { PersonalDataService } from './../personal-data.service';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { catchError, debounceTime, map, of, tap } from 'rxjs';
+import { of } from 'rxjs';
+import { catchError, debounceTime, map, tap } from 'rxjs/operators';
+import { PersonalDataService } from '../personal-data.service';
 import { UserInformation } from '../user-information';
 
 @Component({
@@ -12,63 +13,92 @@ import { UserInformation } from '../user-information';
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
-  userInformation!: UserInformation
-  emailErrors: string[] = [];
+  displayError: boolean = false;
+  errorMessage: string = '';
+  isLoading: boolean = false;
+  userInformation!: UserInformation;
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
-    private personalDataService: PersonalDataService
-  ) {}
+    private personalDataService: PersonalDataService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
 
+    this.setupEmailListener();
+  }
+
+  setupEmailListener() {
     this.loginForm.get('email')?.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(() => {
-      this.updateEmailErrors();
+      debounceTime(500)
+    ).subscribe(value => {
+      const emailControl = this.loginForm.get('email');
+      if (emailControl?.invalid && (emailControl.dirty || emailControl.touched)) {
+        this.displayError = true;
+        this.errorMessage = this.getEmailErrorMessage(emailControl);
+      } else {
+        this.displayError = false;
+        this.errorMessage = '';
+      }
     });
   }
 
-  updateEmailErrors(): void {
-    const emailControl = this.loginForm.get('email');
-    this.emailErrors = [];
+  getEmailErrorMessage(control: AbstractControl): string {
+    if (control.hasError('required')) {
+      return 'Email é obrigatório';
+    }
 
-    if (emailControl?.errors?.['required']) {
-      this.emailErrors.push('Email é obrigatório.');
+    if (control.hasError('email')) {
+      return 'Email inválido';
     }
-    if (emailControl?.errors?.['email']) {
-      this.emailErrors.push('Por favor, insira um email válido.');
-    }
+
+    return '';
   }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      this.personalDataService.getUserInformation(this.loginForm.get('email')?.value).pipe(
+      this.isLoading = true;
+      const email = this.loginForm.get('email')?.value;
+
+      this.personalDataService.getUserInformation(email).pipe(
         map(response => response),
         tap(response => {
           if (response) {
             this.userInformation = response;
-            localStorage.setItem('email', this.loginForm.get('email')?.value);
+            localStorage.setItem('email', email);
             localStorage.setItem('userInformation', JSON.stringify(this.userInformation));
             this.router.navigate(['/activity-tracker', 'activity-form']);
           }
         }),
         catchError(error => {
+          this.isLoading = false;
           if (error.status === 404) {
             this.router.navigate(['/activity-tracker', '/personal-data']);
-            localStorage.setItem('email', this.loginForm.get('email')?.value);
+            localStorage.setItem('email', email);
           } else {
             console.error('Erro ao buscar informações do usuário:', error);
           }
           return of(null);
         })
-      ).subscribe();
+      ).subscribe({
+        next: () => {
+          this.isLoading = false;
+        }
+      });
     } else {
       this.updateEmailErrors();
+    }
+  }
+
+  updateEmailErrors() {
+    const emailControl = this.loginForm.get('email');
+    if (emailControl?.invalid) {
+      this.displayError = true;
+      this.errorMessage = this.getEmailErrorMessage(emailControl);
     }
   }
 }

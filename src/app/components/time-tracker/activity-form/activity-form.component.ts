@@ -132,7 +132,7 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
     }
   }
   private loadWorkItems(userStoryId: string, userId: string, board: string, concluded: boolean) {
-    const loader$ = timer(300).pipe(
+    const loader$ = timer(2000).pipe(
       tap(() => (this.isLoading = true))
     );
   

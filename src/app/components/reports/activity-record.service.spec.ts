@@ -39,7 +39,7 @@ describe('ActivityRecordService', () => {
             });
 
             const req = httpMock.expectOne(
-                `http://localhost:8080/activityrecord/byDate?userId=${userId}&date=${formattedDate}`
+                `http://localhost:8080/activityRecord/byDate?userId=${userId}&date=${formattedDate}`
             );
             expect(req.request.method).toBe('GET');
             req.flush(mockResponse);
@@ -52,12 +52,12 @@ describe('ActivityRecordService', () => {
             const workItemId = 100;
             const mockResponse: ActivityRecord[] = [];
 
-            service.getActivitiesRecordsByWorkItemID(userId, workItemId).subscribe(response => {
+            service.getActivitiesRecordsByWorkItemId(userId, workItemId).subscribe(response => {
                 expect(response).toEqual(mockResponse);
             });
 
             const req = httpMock.expectOne(
-                `http://localhost:8080/activityrecord/byWorkItemID?userId=${userId}&workItemId=${workItemId}`
+                `http://localhost:8080/activityRecord/byWorkItemId?userId=${userId}&workItemId=${workItemId}`
             );
             expect(req.request.method).toBe('GET');
             req.flush(mockResponse);

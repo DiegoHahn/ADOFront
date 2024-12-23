@@ -107,7 +107,7 @@ export class UserActivityComponent implements OnInit {
         }),
         catchError(error => {
           console.error('Erro ao carregar registros por data:', error);
-          this.errorMessage = 'Erro ao carregar registros. Tente novamente.';
+          this.errorMessage = 'Erro ao carregar registros.';
           return of([]);
         })
       ).subscribe();
@@ -118,7 +118,7 @@ export class UserActivityComponent implements OnInit {
     const workItemIdControl = this.filterForm.get('workItemId');
     if (workItemIdControl?.valid && this.userId !== null) {
       const { userId, workItemId } = this.filterForm.value;
-      this.activityRecordService.getActivitiesRecordsByWorkItemID(userId, workItemId).pipe(
+      this.activityRecordService.getActivitiesRecordsByWorkItemId(userId, workItemId).pipe(
         tap(() => {
           this.errorMessage = null;
         }),
@@ -135,7 +135,7 @@ export class UserActivityComponent implements OnInit {
         }),
         catchError(error => {
           console.error('Erro ao carregar registros por ID da Task:', error);
-          this.errorMessage = 'Erro ao carregar registros. Tente novamente.';
+          this.errorMessage = 'Erro ao carregar registros.';
           return of([]);
         })
       ).subscribe();

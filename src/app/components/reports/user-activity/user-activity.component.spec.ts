@@ -20,7 +20,7 @@ describe('UserActivityComponent', () => {
   beforeEach(async () => {
     const activityRecordServiceSpy = {
       getActivitiesRecordsByDate: jest.fn(),
-      getActivitiesRecordsByWorkItemID: jest.fn(),
+      getActivitiesRecordsByWorkItemId: jest.fn(),
     };
 
     const personalDataServiceSpy = {
@@ -229,7 +229,7 @@ describe('UserActivityComponent', () => {
   
       expect(mockActivityRecordService.getActivitiesRecordsByDate).toHaveBeenCalledWith('123', '2023-10-05');
       expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao carregar registros por data:', mockError);
-      expect(component.errorMessage).toEqual('Erro ao carregar registros. Tente novamente.');
+      expect(component.errorMessage).toEqual('Erro ao carregar registros.');
       expect(component.activityRecords).toEqual([]);
       expect(component.calculateTotalTrackedTime).not.toHaveBeenCalled();
   
@@ -275,7 +275,7 @@ describe('UserActivityComponent', () => {
       component.ngOnInit();
       component.filterForm.get('workItemId')?.setValue('456');
       const mockRecords = [{}] as any[];
-      mockActivityRecordService.getActivitiesRecordsByWorkItemID.mockReturnValue(of(mockRecords));
+      mockActivityRecordService.getActivitiesRecordsByWorkItemId.mockReturnValue(of(mockRecords));
       jest.spyOn(component, 'resetWorkItemField');
       jest.spyOn(component, 'calculateTotalTrackedTime');
     
@@ -299,16 +299,16 @@ describe('UserActivityComponent', () => {
       mockPersonalDataService.getUserInformation.mockReturnValue(of(mockUserInformation));
       component.ngOnInit();
       component.filterForm.get('workItemId')?.setValue('456');
-      mockActivityRecordService.getActivitiesRecordsByWorkItemID.mockReturnValue(throwError(() => mockError));
+      mockActivityRecordService.getActivitiesRecordsByWorkItemId.mockReturnValue(throwError(() => mockError));
   
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       jest.spyOn(component, 'calculateTotalTrackedTime');
   
       component.loadRecordsByWorkItemID();
   
-      expect(mockActivityRecordService.getActivitiesRecordsByWorkItemID).toHaveBeenCalledWith('123', '456');
+      expect(mockActivityRecordService.getActivitiesRecordsByWorkItemId).toHaveBeenCalledWith('123', '456');
       expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao carregar registros por ID da Task:', mockError);
-      expect(component.errorMessage).toEqual('Erro ao carregar registros. Tente novamente.');
+      expect(component.errorMessage).toEqual('Erro ao carregar registros.');
       expect(component.activityRecords).toEqual([]);
       expect(component.calculateTotalTrackedTime).not.toHaveBeenCalled();
   
@@ -319,7 +319,7 @@ describe('UserActivityComponent', () => {
       component.userId = '123';
       component.filterForm.get('workItemId')?.setValue('456');
       const mockEmptyRecords: ActivityRecord[] = [];
-      mockActivityRecordService.getActivitiesRecordsByWorkItemID.mockReturnValue(of(mockEmptyRecords));
+      mockActivityRecordService.getActivitiesRecordsByWorkItemId.mockReturnValue(of(mockEmptyRecords));
       jest.spyOn(component, 'resetWorkItemField');
       jest.spyOn(component, 'calculateTotalTrackedTime');
   
@@ -337,7 +337,7 @@ describe('UserActivityComponent', () => {
   
       component.loadRecordsByWorkItemID();
   
-      expect(mockActivityRecordService.getActivitiesRecordsByWorkItemID).not.toHaveBeenCalled();
+      expect(mockActivityRecordService.getActivitiesRecordsByWorkItemId).not.toHaveBeenCalled();
     });
   });
 
