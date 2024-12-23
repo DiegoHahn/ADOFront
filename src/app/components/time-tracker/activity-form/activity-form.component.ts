@@ -187,5 +187,9 @@ export class ActivityFormComponent implements OnInit, OnDestroy {
       this.errorMessage = null;
     }
   }
+
+  onSubmit(event: Event): void {
+    event.preventDefault();
+  }
 }
 

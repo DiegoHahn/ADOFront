@@ -400,5 +400,17 @@ describe('ActivityFormComponent', () => {
       expect(component.successMessage).toBeNull();
       expect(component.errorMessage).toBeNull();
     });
+
+    describe('onSubmit', () => {
+      it('should prevent default event behavior', () => {
+        const mockEvent = {
+          preventDefault: jest.fn()
+        } as unknown as Event;
+
+        component.onSubmit(mockEvent);
+
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+      });
+    });
   });
 });
