@@ -9,7 +9,7 @@ import { TargetWorkItem } from './target-workItem';
 })
 export class WorkItemService {
   private apiUrl = 'http://localhost:8080/workitems';
-  private activityRecordUrl = 'http://localhost:8080/activityrecord';
+  private activityRecordUrl = 'http://localhost:8080/activityRecord';
 
   constructor(private http: HttpClient) { }
 
@@ -18,7 +18,7 @@ export class WorkItemService {
     return this.http.post<TargetWorkItem[]>(`${this.apiUrl}/userstory`, body);
   }
 
-  saveRecord(record: CurrentTrackedTime): Observable<CurrentTrackedTime> { 
+  saveRecord(record: CurrentTrackedTime): Observable<CurrentTrackedTime> {
     return this.http.post(this.activityRecordUrl, record, { responseType: 'text' }).pipe(
       map(response => {
         return JSON.parse(response) as CurrentTrackedTime || null;
