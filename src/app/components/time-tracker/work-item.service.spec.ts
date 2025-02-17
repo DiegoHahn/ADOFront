@@ -100,7 +100,7 @@ describe('WorkItemService', () => {
                 expect(response).toEqual(mockRecord);
             });
 
-            const req = httpMock.expectOne('http://localhost:8080/activityrecord');
+            const req = httpMock.expectOne('http://localhost:8080/activityRecord');
             expect(req.request.method).toBe('POST');
             expect(req.request.body).toEqual(mockRecord);
             req.flush(mockRecord);
@@ -140,7 +140,7 @@ describe('WorkItemService', () => {
                 }
             );
 
-            const req = httpMock.expectOne('http://localhost:8080/activityrecord');
+            const req = httpMock.expectOne('http://localhost:8080/activityRecord');
             expect(req.request.method).toBe('POST');
             req.flush('Invalid data', { status: 400, statusText: 'Bad Request' });
         });
@@ -169,7 +169,7 @@ describe('WorkItemService', () => {
                 expect(response).toBeNull();
             });
     
-            const req = httpMock.expectOne('http://localhost:8080/activityrecord');
+            const req = httpMock.expectOne('http://localhost:8080/activityRecord');
             expect(req.request.method).toBe('POST');
             expect(req.request.body).toEqual(mockRecord);
     
