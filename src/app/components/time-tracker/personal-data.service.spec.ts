@@ -2,11 +2,12 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { PersonalDataService } from './personal-data.service';
 import { UserInformation } from './user-information';
+import { environment } from '../../../environments/environment';
 
 describe('PersonalDataService', () => {
     let service: PersonalDataService;
     let httpMock: HttpTestingController;
-    const apiUrl = 'http://localhost:8080/userInformation';
+    const apiUrl = `${environment.apiUrl}/userInformation`;
 
     beforeEach(() => {
         TestBed.configureTestingModule({

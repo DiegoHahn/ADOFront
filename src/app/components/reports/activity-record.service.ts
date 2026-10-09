@@ -2,12 +2,13 @@ import { DatePipe } from "@angular/common";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { environment } from "../../../environments/environment";
 import { ActivityRecord } from "../ActivityRecord";
 
 
 @Injectable()
   export class ActivityRecordService {
-  private activityRecordUrl = 'http://localhost:8080/activityRecord';
+  private activityRecordUrl = `${environment.apiUrl}/activityRecord`;
 
   constructor(
     private http: HttpClient,
