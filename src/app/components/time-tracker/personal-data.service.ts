@@ -1,13 +1,14 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { UserInformation } from './user-information';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PersonalDataService {
-  private apiUrl = 'http://localhost:8080/userInformation';
+  private apiUrl = `${environment.apiUrl}/userInformation`;
 
   constructor(private http: HttpClient) { }
 

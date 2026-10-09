@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { ActivityRecord } from '../ActivityRecord';
 import { ActivityRecordService } from './activity-record.service';
+import { environment } from '../../../environments/environment';
 
 describe('ActivityRecordService', () => {
     let service: ActivityRecordService;
@@ -39,7 +40,7 @@ describe('ActivityRecordService', () => {
             });
 
             const req = httpMock.expectOne(
-                `http://localhost:8080/activityRecord/byDate?userId=${userId}&date=${formattedDate}`
+                `${environment.apiUrl}/activityRecord/byDate?userId=${userId}&date=${formattedDate}`
             );
             expect(req.request.method).toBe('GET');
             req.flush(mockResponse);
@@ -57,7 +58,7 @@ describe('ActivityRecordService', () => {
             });
 
             const req = httpMock.expectOne(
-                `http://localhost:8080/activityRecord/byWorkItemId?userId=${userId}&workItemId=${workItemId}`
+                `${environment.apiUrl}/activityRecord/byWorkItemId?userId=${userId}&workItemId=${workItemId}`
             );
             expect(req.request.method).toBe('GET');
             req.flush(mockResponse);
