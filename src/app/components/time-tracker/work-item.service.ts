@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { CurrentTrackedTime } from '../CurrentTrackedTime';
 import { TargetWorkItem } from './target-workItem';
 
@@ -8,8 +9,8 @@ import { TargetWorkItem } from './target-workItem';
   providedIn: 'root'
 })
 export class WorkItemService {
-  private apiUrl = 'http://localhost:8080/workitems';
-  private activityRecordUrl = 'http://localhost:8080/activityRecord';
+  private apiUrl = `${environment.apiUrl}/workitems`;
+  private activityRecordUrl = `${environment.apiUrl}/activityRecord`;
 
   constructor(private http: HttpClient) { }
 
